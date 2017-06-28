@@ -1,0 +1,9 @@
+- name: Deploy rds-apb to openshift
+  hosts: localhost
+  gather_facts: true
+  connection: local
+  roles:
+  - role: ansible.kubernetes-modules
+    install_python_requirements: no
+  - role: rds-apb-openshift
+    playbook_debug: false

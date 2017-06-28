@@ -1,0 +1,690 @@
+---
+  AWSTemplateFormatVersion: "2010-09-09"
+  Description: "Best Practice RDS Template for Production Databases (ALPHA build, may kill your puppies and possibly even your databases)"
+  Parameters: 
+    ApplicationName: 
+      Description: "This will be set as the value for the \"APPLICATION_NAME\" tag on all supported resources"
+      Type: "String"
+    VpcId: 
+      Description: "The ID of the VPC to launch the RDS instance into"
+      Type: "AWS::EC2::VPC::Id"
+    NumberOfAvailabilityZones: 
+      Description: "Quantity of subnets to use, if selecting more than 2 the region this stack is in must have at least that many Availability Zones"
+      Type: "String"
+      Default: "2"
+      AllowedValues: 
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+    PreferredBackupWindow: 
+      Description: "The daily time range in UTC during which automated backups are created (if automated backups are enabled). Cannot overlap with PreferredMaintenanceWindowTime"
+      Type: "String"
+      Default: "00:00-02:00"
+      AllowedValues: 
+        - "00:00-02:00"
+        - "01:00-03:00"
+        - "02:00-04:00"
+        - "03:00-05:00"
+        - "04:00-06:00"
+        - "05:00-07:00"
+        - "06:00-08:00"
+        - "07:00-09:00"
+        - "08:00-10:00"
+        - "09:00-11:00"
+        - "10:00-12:00"
+        - "11:00-13:00"
+        - "12:00-14:00"
+        - "13:00-15:00"
+        - "14:00-16:00"
+        - "15:00-17:00"
+        - "16:00-18:00"
+        - "17:00-19:00"
+        - "18:00-20:00"
+        - "19:00-21:00"
+        - "20:00-22:00"
+        - "21:00-23:00"
+        - "22:00-24:00"
+    PreferredMaintenanceWindowDay: 
+      Description: "The day of the week which RDS maintenance will be performed"
+      Type: "String"
+      Default: "Mon"
+      AllowedValues: 
+        - "Mon"
+        - "Tue"
+        - "Wed"
+        - "Thu"
+        - "Fri"
+        - "Sat"
+        - "Sun"
+    PreferredMaintenanceWindowStartTime: 
+      Description: "The weekly start time in UTC for the RDS maintenance window, must be less than PreferredMaintenanceWindowEndTime and cannot overlap with PreferredBackupWindow"
+      Type: "String"
+      Default: "04:00"
+      AllowedValues: 
+        - "00:00"
+        - "01:00"
+        - "02:00"
+        - "03:00"
+        - "04:00"
+        - "05:00"
+        - "06:00"
+        - "07:00"
+        - "08:00"
+        - "09:00"
+        - "10:00"
+        - "11:00"
+        - "12:00"
+        - "13:00"
+        - "14:00"
+        - "15:00"
+        - "16:00"
+        - "17:00"
+        - "18:00"
+        - "19:00"
+        - "20:00"
+        - "21:00"
+        - "22:00"
+    PreferredMaintenanceWindowEndTime: 
+      Description: "The weekly end time in UTC for the RDS maintenance window, must be more than PreferredMaintenanceWindowEndTime and cannot overlap with PreferredBackupWindow"
+      Type: "String"
+      Default: "06:00"
+      AllowedValues: 
+        - "00:00"
+        - "01:00"
+        - "02:00"
+        - "03:00"
+        - "04:00"
+        - "05:00"
+        - "06:00"
+        - "07:00"
+        - "08:00"
+        - "09:00"
+        - "10:00"
+        - "11:00"
+        - "12:00"
+        - "13:00"
+        - "14:00"
+        - "15:00"
+        - "16:00"
+        - "17:00"
+        - "18:00"
+        - "19:00"
+        - "20:00"
+        - "21:00"
+        - "22:00"
+    MonitoringInterval: 
+      Description: "The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance."
+      Type: "String"
+      Default: "1"
+      AllowedValues: 
+        - "0"
+        - "1"
+        - "5"
+        - "10"
+        - "15"
+        - "30"
+        - "60"
+    AvailabilityZones: 
+      Description: "list of availability zones to use, must be the same quantity as specified in NumberOfAvailabilityZones"
+      Type: "List<AWS::EC2::AvailabilityZone::Name>"
+    CidrBlocks: 
+      Description: "comma seperated list of CIDR blocks to place RDS into, must be the same quantity as specified in NumberOfAvailabilityZones"
+      Type: "CommaDelimitedList"
+      Default: "172.16.29.0/25,172.16.29.128/25"
+    AccessCidr: 
+      Description: "CIDR block to allow to connect to database"
+      Type: "String"
+    AllocatedStorageAndIops: 
+      Description: "Storage/IOPS to allocate"
+      Type: "String"
+      Default: "100 GB / 1,000 IOPS"
+      AllowedValues: 
+        - "100 GB / 1,000 IOPS"
+        - "300 GB / 3,000 IOPS"
+        - "600 GB / 6,000 IOPS"
+        - "1,000 GB / 10,000 IOPS"
+        - "1,500 GB / 15,000 IOPS"
+        - "2,000 GB / 20,000 IOPS"
+        - "3,000 GB / 30,000 IOPS"
+        - "4,000 GB / 40,000 IOPS"
+        - "6,000 GB / 60,000 IOPS"
+    MasterUsername: 
+      Description: "Master database Username"
+      Type: "String"
+    MasterUserPassword: 
+      Description: "Master user database Password"
+      Type: "String"
+      NoEcho: "true"
+    AllowMajorVersionUpgrade: 
+      Description: "If you update the EngineVersion property to a version that's different from the DB instance's current major version, set this property to true."
+      Type: "String"
+      Default: "false"
+      AllowedValues: 
+        - "true"
+        - "false"
+    StorageType: 
+      Description: "Specifies the storage type to be associated with the DB instance."
+      Type: "String"
+      Default: "io1"
+      AllowedValues: 
+        - "io1"
+        - "gp2"
+        - "standard"
+    MultiAZ: 
+      Description: "Specifies if the database instance is a multiple Availability Zone deployment."
+      Type: "String"
+      Default: "true"
+      AllowedValues: 
+        - "true"
+        - "false"
+    AutoMinorVersionUpgrade: 
+      Description: "Indicates that minor engine upgrades are applied automatically to the DB instance during the maintenance window."
+      Type: "String"
+      Default: "true"
+      AllowedValues: 
+        - "true"
+        - "false"
+    StorageEncrypted: 
+      Description: "Indicates whether the DB instance is encrypted."
+      Type: "String"
+      Default: "true"
+      AllowedValues: 
+        - "true"
+        - "false"
+    BackupRetentionPeriod: 
+      Description: "The number of days during which automatic DB snapshots are retained. Setting 0 disables automatic snapshots, maximum value is 35"
+      Type: "Number"
+      Default: "35"
+      MinValue: "0"
+      MaxValue: "35"
+    PortNumber: 
+      Description: "The port number for the database server to listen on"
+      Type: "Number"
+      Default: "10001"
+      MinValue: "1150"
+      MaxValue: "65535"
+    CopyTagsToSnapshot: 
+      Description: "Indicates whether to copy all of the user-defined tags from the DB instance to snapshots of the DB instance."
+      Type: "String"
+      Default: "true"
+      AllowedValues: 
+        - "true"
+        - "false"
+    PubliclyAccessible: 
+      Description: "Indicates whether the DB instance is an Internet-facing instance."
+      Type: "String"
+      Default: "false"
+      AllowedValues: 
+        - "true"
+        - "false"
+    DBInstanceClass: 
+      Description: "The compute and memory capacity of the DB instance."
+      Type: "String"
+      Default: "db.r3.2xlarge"
+      AllowedValues: 
+        - "db.m4.large"
+        - "db.m4.xlarge"
+        - "db.m4.2xlarge"
+        - "db.m4.4xlarge"
+        - "db.m4.10xlarge"
+        - "db.r3.large"
+        - "db.r3.xlarge"
+        - "db.r3.2xlarge"
+        - "db.r3.4xlarge"
+        - "db.r3.8xlarge"
+        - "db.t2.large"
+    DBName: 
+      Description: "The name of the database to create when the DB instance is created."
+      Type: "String"
+      MinLength: "1"
+      MaxLength: "64"
+      AllowedPattern: "^[a-zA-Z0-9]*$"
+      ConstraintDescription: "must contain from 1 to 64 alphanumeric characters."
+    EngineVersion: 
+      Description: "The version number of the database engine to use."
+      Type: "String"
+      Default: ""
+      AllowedValues: 
+        - ""
+  Conditions: 
+    100GB: 
+      Fn::Equals: 
+        - 
+          Ref: "AllocatedStorageAndIops"
+        - "100 GB / 1,000 IOPS"
+    300GB: 
+      Fn::Equals: 
+        - 
+          Ref: "AllocatedStorageAndIops"
+        - "300 GB / 3,000 IOPS"
+    600GB: 
+      Fn::Equals: 
+        - 
+          Ref: "AllocatedStorageAndIops"
+        - "600 GB / 6,000 IOPS"
+    1000GB: 
+      Fn::Equals: 
+        - 
+          Ref: "AllocatedStorageAndIops"
+        - "1,000 GB / 10,000 IOPS"
+    1500GB: 
+      Fn::Equals: 
+        - 
+          Ref: "AllocatedStorageAndIops"
+        - "1,500 GB / 15,000 IOPS"
+    2000GB: 
+      Fn::Equals: 
+        - 
+          Ref: "AllocatedStorageAndIops"
+        - "2,000 GB / 20,000 IOPS"
+    3000GB: 
+      Fn::Equals: 
+        - 
+          Ref: "AllocatedStorageAndIops"
+        - "3,000 GB / 30,000 IOPS"
+    4000GB: 
+      Fn::Equals: 
+        - 
+          Ref: "AllocatedStorageAndIops"
+        - "4,000 GB / 40,000 IOPS"
+    3az: 
+      Fn::Or: 
+        - 
+          Fn::Equals: 
+            - 
+              Ref: "NumberOfAvailabilityZones"
+            - "3"
+        - 
+          Fn::Equals: 
+            - 
+              Ref: "NumberOfAvailabilityZones"
+            - "4"
+        - 
+          Fn::Equals: 
+            - 
+              Ref: "NumberOfAvailabilityZones"
+            - "5"
+    4az: 
+      Fn::Or: 
+        - 
+          Fn::Equals: 
+            - 
+              Ref: "NumberOfAvailabilityZones"
+            - "4"
+        - 
+          Fn::Equals: 
+            - 
+              Ref: "NumberOfAvailabilityZones"
+            - "5"
+    5az: 
+      Fn::Equals: 
+        - 
+          Ref: "NumberOfAvailabilityZones"
+        - "5"
+  Resources: 
+    KMSKey: 
+      Type: "AWS::KMS::Key"
+      Properties: 
+        Description: 
+          Fn::Sub: "Application: ${ApplicationName} Database: ${DBName}"
+        Enabled: "true"
+        EnableKeyRotation: "true"
+        KeyPolicy: 
+          Version: "2012-10-17"
+          Id: "key-default-1"
+          Statement: 
+            - 
+              Sid: "Allow administration of the key"
+              Effect: "Allow"
+              Principal: 
+                AWS: 
+                  Fn::Sub: "arn:aws:iam::${AWS::AccountId}:root"
+              Action: 
+                - "kms:Create*"
+                - "kms:Describe*"
+                - "kms:Enable*"
+                - "kms:List*"
+                - "kms:Put*"
+                - "kms:Update*"
+                - "kms:Revoke*"
+                - "kms:Disable*"
+                - "kms:Get*"
+                - "kms:Delete*"
+                - "kms:ScheduleKeyDeletion"
+                - "kms:CancelKeyDeletion"
+              Resource: "*"
+    DBParameterGroup: 
+      Type: "AWS::RDS::DBParameterGroup"
+      Properties: 
+        Description: 
+          Fn::Sub: "Application: ${ApplicationName} Database: ${DBName}"
+        Family: ""
+        Parameters: {}
+        Tags: 
+          - 
+            Key: "ApplicationName"
+            Value: 
+              Ref: "ApplicationName"
+    DBSubnetGroup: 
+      Type: "AWS::RDS::DBSubnetGroup"
+      Properties: 
+        DBSubnetGroupDescription: 
+          Fn::Sub: "Application: ${ApplicationName} Database: ${DBName}"
+        SubnetIds: 
+          - 
+            Ref: "DBSubnet1"
+          - 
+            Ref: "DBSubnet2"
+          - 
+            Fn::If: 
+              - "3az"
+              - 
+                Ref: "DBSubnet3"
+              - 
+                Ref: "AWS::NoValue"
+          - 
+            Fn::If: 
+              - "4az"
+              - 
+                Ref: "DBSubnet4"
+              - 
+                Ref: "AWS::NoValue"
+          - 
+            Fn::If: 
+              - "5az"
+              - 
+                Ref: "DBSubnet5"
+              - 
+                Ref: "AWS::NoValue"
+        Tags: 
+          - 
+            Key: "ApplicationName"
+            Value: 
+              Ref: "ApplicationName"
+    DBSubnet1: 
+      Type: "AWS::EC2::Subnet"
+      Properties: 
+        AvailabilityZone: 
+          Fn::Select: 
+            - 0
+            - 
+              Ref: "AvailabilityZones"
+        VpcId: 
+          Ref: "VpcId"
+        CidrBlock: 
+          Fn::Select: 
+            - 0
+            - 
+              Ref: "CidrBlocks"
+        Tags: 
+          - 
+            Key: "APPLICATION_NAME"
+            Value: 
+              Ref: "ApplicationName"
+    DBSubnet2: 
+      Type: "AWS::EC2::Subnet"
+      Properties: 
+        AvailabilityZone: 
+          Fn::Select: 
+            - 1
+            - 
+              Ref: "AvailabilityZones"
+        VpcId: 
+          Ref: "VpcId"
+        CidrBlock: 
+          Fn::Select: 
+            - 1
+            - 
+              Ref: "CidrBlocks"
+        Tags: 
+          - 
+            Key: "APPLICATION_NAME"
+            Value: 
+              Ref: "ApplicationName"
+    DBSubnet3: 
+      Condition: "3az"
+      Type: "AWS::EC2::Subnet"
+      Properties: 
+        AvailabilityZone: 
+          Fn::Select: 
+            - 2
+            - 
+              Ref: "AvailabilityZones"
+        VpcId: 
+          Ref: "VpcId"
+        CidrBlock: 
+          Fn::Select: 
+            - 2
+            - 
+              Ref: "CidrBlocks"
+        Tags: 
+          - 
+            Key: "APPLICATION_NAME"
+            Value: 
+              Ref: "ApplicationName"
+    DBSubnet4: 
+      Condition: "4az"
+      Type: "AWS::EC2::Subnet"
+      Properties: 
+        AvailabilityZone: 
+          Fn::Select: 
+            - 3
+            - 
+              Ref: "AvailabilityZones"
+        VpcId: 
+          Ref: "VpcId"
+        CidrBlock: 
+          Fn::Select: 
+            - 3
+            - 
+              Ref: "CidrBlocks"
+        Tags: 
+          - 
+            Key: "APPLICATION_NAME"
+            Value: 
+              Ref: "ApplicationName"
+    DBSubnet5: 
+      Condition: "5az"
+      Type: "AWS::EC2::Subnet"
+      Properties: 
+        AvailabilityZone: 
+          Fn::Select: 
+            - 4
+            - 
+              Ref: "AvailabilityZones"
+        VpcId: 
+          Ref: "VpcId"
+        CidrBlock: 
+          Fn::Select: 
+            - 4
+            - 
+              Ref: "CidrBlocks"
+        Tags: 
+          - 
+            Key: "APPLICATION_NAME"
+            Value: 
+              Ref: "ApplicationName"
+    DBOptionGroup: 
+      Type: "AWS::RDS::OptionGroup"
+      Properties: 
+        EngineName: ""
+        MajorEngineVersion: ""
+        OptionGroupDescription: 
+          Fn::Sub: "Application: ${ApplicationName} Database: ${DBName}"
+        OptionConfigurations: []
+        Tags: 
+          - 
+            Key: "ApplicationName"
+            Value: 
+              Ref: "ApplicationName"
+    RDSSecurityGroup: 
+      Type: "AWS::EC2::SecurityGroup"
+      Properties: 
+        GroupDescription: 
+          Fn::Sub: "Allow Client connections to Application: ${ApplicationName} Database: ${DBName}"
+        VpcId: 
+          Ref: "VpcId"
+        SecurityGroupIngress: 
+          - 
+            IpProtocol: "tcp"
+            FromPort: 
+              Ref: "PortNumber"
+            ToPort: 
+              Ref: "PortNumber"
+            CidrIp: 
+              Ref: "AccessCidr"
+        SecurityGroupEgress: 
+          - 
+            IpProtocol: "-1"
+            FromPort: "-1"
+            ToPort: "-1"
+            CidrIp: "0.0.0.0/0"
+    MonitoringRole: 
+      Type: "AWS::IAM::Role"
+      Properties: 
+        AssumeRolePolicyDocument: 
+          Version: "2012-10-17"
+          Statement: 
+            - 
+              Effect: "Allow"
+              Principal: 
+                Service: "monitoring.rds.amazonaws.com"
+              Action: "sts:AssumeRole"
+        Path: "/"
+        ManagedPolicyArns: 
+          - "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+    DBInstance: 
+      Type: "AWS::RDS::DBInstance"
+      Properties: 
+        AllocatedStorage: 
+          Fn::If: 
+            - "100GB"
+            - "100"
+            - 
+              Fn::If: 
+                - "300GB"
+                - "300"
+                - 
+                  Fn::If: 
+                    - "600GB"
+                    - "600"
+                    - 
+                      Fn::If: 
+                        - "1000GB"
+                        - "1000"
+                        - 
+                          Fn::If: 
+                            - "1500GB"
+                            - "1500"
+                            - 
+                              Fn::If: 
+                                - "2000GB"
+                                - "2000"
+                                - 
+                                  Fn::If: 
+                                    - "3000GB"
+                                    - "3000"
+                                    - 
+                                      Fn::If: 
+                                        - "4000GB"
+                                        - "4000"
+                                        - "6000"
+        AllowMajorVersionUpgrade: 
+          Ref: "AllowMajorVersionUpgrade"
+        AutoMinorVersionUpgrade: 
+          Ref: "AutoMinorVersionUpgrade"
+        BackupRetentionPeriod: 
+          Ref: "BackupRetentionPeriod"
+        CopyTagsToSnapshot: 
+          Ref: "CopyTagsToSnapshot"
+        DBInstanceClass: 
+          Ref: "DBInstanceClass"
+        DBName: 
+          Ref: "DBName"
+        DBParameterGroupName: 
+          Ref: "DBParameterGroup"
+        DBSubnetGroupName: 
+          Ref: "DBSubnetGroup"
+        Engine: ""
+        EngineVersion: 
+          Ref: "EngineVersion"
+        Iops: 
+          Fn::If: 
+            - "100GB"
+            - "1000"
+            - 
+              Fn::If: 
+                - "300GB"
+                - "3000"
+                - 
+                  Fn::If: 
+                    - "600GB"
+                    - "6000"
+                    - 
+                      Fn::If: 
+                        - "1000GB"
+                        - "10000"
+                        - 
+                          Fn::If: 
+                            - "1500GB"
+                            - "15000"
+                            - 
+                              Fn::If: 
+                                - "2000GB"
+                                - "20000"
+                                - 
+                                  Fn::If: 
+                                    - "3000GB"
+                                    - "30000"
+                                    - 
+                                      Fn::If: 
+                                        - "4000GB"
+                                        - "40000"
+                                        - "60000"
+        KmsKeyId: 
+          Fn::GetAtt: 
+            - "KMSKey"
+            - "Arn"
+        LicenseModel: "general-public-license"
+        MasterUsername: 
+          Ref: "MasterUsername"
+        MasterUserPassword: 
+          Ref: "MasterUserPassword"
+        MonitoringInterval: 
+          Ref: "MonitoringInterval"
+        MonitoringRoleArn: 
+          Fn::GetAtt: 
+            - "MonitoringRole"
+            - "Arn"
+        MultiAZ: 
+          Ref: "MultiAZ"
+        OptionGroupName: 
+          Ref: "DBOptionGroup"
+        Port: 
+          Ref: "PortNumber"
+        PreferredBackupWindow: 
+          Ref: "PreferredBackupWindow"
+        PreferredMaintenanceWindow: 
+          Fn::Sub: "${PreferredMaintenanceWindowDay}:${PreferredMaintenanceWindowStartTime}-${PreferredMaintenanceWindowDay}:${PreferredMaintenanceWindowEndTime}"
+        PubliclyAccessible: 
+          Ref: "PubliclyAccessible"
+        StorageEncrypted: 
+          Ref: "StorageEncrypted"
+        StorageType: 
+          Ref: "StorageType"
+        Tags: 
+          - 
+            Key: "ApplicationName"
+            Value: 
+              Ref: "ApplicationName"
+        VPCSecurityGroups: 
+          - 
+            Ref: "RDSSecurityGroup"
+  Outputs: 
+    EndpointAddress: 
+      Value: 
+        Fn::GetAtt: 
+          - "DBInstance"
+          - "Endpoint.Address"
+
