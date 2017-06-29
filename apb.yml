@@ -72,7 +72,7 @@ parameters:
     description: vpc security groups to assign to the instance
     type: string
 metadata:
-  displayName: "Amazon RDS - PostgreSQL"
+  displayName: "Amazon RDS"
   longDescription: "Amazon Relational Database Service (Amazon RDS) makes it easy to set up, operate, and scale a relational database in the cloud. It provides cost-efficient and resizable capacity while managing time-consuming database administration tasks, freeing you up to focus on your applications and business. Amazon RDS provides you six familiar database engines to choose from, including Amazon Aurora, PostgreSQL, MySQL, MariaDB, Oracle, and Microsoft SQL Server."
-  imageUrl: "https://s3.amazonaws.com/fusor/2017demo/Database_AmazonRDS_PostgreSQLinstance.png"
+  imageUrl: "https://d0.awsstatic.com/cloud-storage/Deck_Databases.png"
   documentationUrl: "https://aws.amazon.com/rds/"

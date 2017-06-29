@@ -1,0 +1,86 @@
+- set_fact:
+    tds: "{{ ansible_date_time.epoch }}"
+
+- name: launch RDS mySQL cluster
+  cloudformation:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    stack_name: "apb-RDS"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: false
+    template: "roles/rds-apb-openshift/files/rds-mysql.yml"
+    template_parameters:
+      ApplicationName: "{{ ApplicationName }}"
+      VpcId: "{{ VpcId }}"
+      NumberOfAvailabilityZones: "{{ NumberOfAvailabilityZones }}"
+      PreferredBackupWindow: "{{ PreferredBackupWindow }}"
+      PreferredMaintenanceWindowDay: "{{ PreferredMaintenanceWindowDay }}"
+      PreferredMaintenanceWindowStartTime: "{{ PreferredMaintenanceWindowStartTime }}"
+      PreferredMaintenanceWindowEndTime: "{{ PreferredMaintenanceWindowEndTime }}"
+      MonitoringInterval: "{{ MonitoringInterval }}"
+      AvailabilityZones: "{{ AvailabilityZones }}"
+      CidrBlocks: "{{ CidrBlocks }}"
+      AccessCidr: "{{ AccessCidr }}"
+      AllocatedStorageAndIops: "{{ AllocatedStorageAndIops }}"
+      MasterUsername: "{{ MasterUsername }}"
+      MasterUserPassword: "{{ MasterUserPassword }}"
+      AllowMajorVersionUpgrade: "{{ AllowMajorVersionUpgrade }}"
+      StorageType: "{{ StorageType }}"
+      MultiAZ: "{{ MultiAZ }}"
+      AutoMinorVersionUpgrade: "{{ AutoMinorVersionUpgrade }}"
+      StorageEncrypted: "{{ StorageEncrypted }}"
+      BackupRetentionPeriod: "{{ BackupRetentionPeriod }}"
+      PortNumber: "{{ PortNumber }}"
+      CopyTagsToSnapshot: "{{ CopyTagsToSnapshot }}"
+      PubliclyAccessible: "{{ PubliclyAccessible }}"
+      DBInstanceClass: "{{ DBInstanceClass }}"
+      DBName: "{{ DBName }}"
+      EngineVersion: "{{ EngineVersion }}"
+      MysqlServerTimezone: "{{ MysqlServerTimezone }}"
+    tags:
+      Stack: "ansible-cloudformation"
+      Application: "ansible-rds-mysql"
+      Description: "{{ ansible_user_id }} RDS {{ ApplicationName }} {{ tds }}"
+  register: rds
+
+- set_fact:
+    rds_endpoint_ip: "{{ rds.stack_outputs }}"
+
+- debug:
+    msg: "{{ rds }}"
+
+#- name: create namespace
+#  openshift_v1_project:
+#    name: '{{ namespace }}'
+
+#- name: create openshift endpoint
+#  k8s_v1_endpoint:
+#    name: "rds-{{ tds }}"
+#    subsets:
+#    - addresses:
+#        - ip: "{{ rds_endpoint_ip.stdout }}"
+#      ports:
+#        - port: "{{ port }}"
+#          name: "{{ db_engine }}"
+#
+#- name: create openshift service
+#  k8s_v1_service:
+#    name: "rds-{{ tds }}"
+#    ports:
+#    - name: "{{ db_engine }}"
+#      protocol: "TCP"
+#      port: "{{ port }}"
+#      target_port: "{{ port }}"
+#      node_port: 0
+#
+#- name: retrieve openshift endpoint ip
+#  shell: "oc get svc -n {{ namespace }} rds-{{ tds }} --no-headers=true | awk '{ print $2 }'"
+#  register: endpoint_ip
+#
+#- name: encode bind credentials
+#  shell: 'echo "{\"POSTGRES_HOST\": \"{{ endpoint_ip.stdout }}\", \"POSTGRES_PORT\": \"{{ port }}\", \"POSTGRES_USER\": \"{{ db_username }}\", \"POSTGRES_PASSWORD\": \"{{ db_password }}\", \"POSTGRES_DB\": \"{{ db_name }}\"}" | base64 -w 0'
+#  register: encoded_bind_credentials
+#
+#- debug:
+#    msg: "<BIND_CREDENTIALS>{{ encoded_bind_credentials.stdout }}</BIND_CREDENTIALS>"

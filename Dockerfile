@@ -54,6 +54,6 @@ ZW50YXRpb25Vcmw6ICJodHRwczovL2F3cy5hbWF6b24uY29tL3Jkcy8iCg=="
 COPY roles /opt/ansible/roles
 COPY playbooks /opt/apb/actions
 
-RUN yum -y install python-boto postgresql && yum clean all
+RUN yum -y install python-boto && yum clean all
 
 USER apb
