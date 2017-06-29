@@ -9,7 +9,7 @@
     state: "present"
     region: "{{ region }}"
     disable_rollback: false
-    template: "roles/rds-apb-openshift/files/rds-mysql.yml"
+    template: "roles/provision-rds-apb-openshift/files/rds-mysql.yml"
     template_parameters:
       ApplicationName: "{{ ApplicationName }}"
       VpcId: "{{ VpcId }}"

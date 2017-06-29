@@ -1,9 +1,9 @@
-- name: Deploy rds to openshift
+- name: Rds deprovision
   hosts: localhost
-  gather_facts: true
+  gather_facts: false
   connection: local
   roles:
   - role: ansible.kubernetes-modules
     install_python_requirements: no
-  - role: provision-rds-apb-openshift
+  - role: deprovision-rds-apb-openshift
     playbook_debug: false
