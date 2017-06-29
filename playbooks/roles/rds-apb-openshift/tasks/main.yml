@@ -45,7 +45,11 @@
   register: rds
 
 - set_fact:
-    rds_endpoint_ip: "{{ rds.stack_outputs }}"
+    # This an FQDN like this:
+    #     "stack_outputs": {
+    #         "EndpointAddress": "adkki8sccwz1w1.c3sv0lquvd4q.us-west-2.rds.amazonaws.com"
+    #     }
+    rds_endpoint_address: "{{ rds.stack_outputs.EndpointAddress }}"
 
 - debug:
     msg: "{{ rds }}"
@@ -59,7 +63,7 @@
 #    name: "rds-{{ tds }}"
 #    subsets:
 #    - addresses:
-#        - ip: "{{ rds_endpoint_ip.stdout }}"
+#        - ip: "{{ rds_endpoint_address }}"
 #      ports:
 #        - port: "{{ port }}"
 #          name: "{{ db_engine }}"
