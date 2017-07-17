@@ -2,7 +2,7 @@
   cloudformation:
    aws_access_key: "{{ aws_access_key }}"
    aws_secret_key: "{{ aws_secret_key }}"
-   stack_name: "apb-RDS"
+   stack_name: "apb-RDS-{{ stack_identifier }}"
    state: "present"
    region: "{{ region }}"
    disable_rollback: false

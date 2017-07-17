@@ -8,6 +8,10 @@ tags:
 bindable: true
 async: optional
 parameters:
+  - stack_identifier:
+      title: Unique Stack Identifier
+      description: 'Unique identifier to be included in the CloudFormation Stack Name to prevent naming collisions. Must only contain alphanumeric characters and hyphens. (e.g. "sample-rds-stack", "production-rds-04-2017")'
+      type: string
   - aws_access_key:
       title: AWS Access Key
       description: 'AWS Access Key to authenticate to AWS with.'
@@ -154,6 +158,7 @@ parameters:
       type: string
       default: io1
 required:
+  - stack_identifier
   - aws_access_key
   - aws_secret_key
   - region
