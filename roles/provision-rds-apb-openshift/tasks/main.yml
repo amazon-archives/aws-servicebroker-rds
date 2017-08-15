@@ -52,5 +52,5 @@
       DB_PASSWORD: "{{ MasterUserPassword }}"
       DB_NAME: "{{ DBName }}"
       DB_HOST: "{{ rds_endpoint_address }}"
-      DB_PORT: "{{ PortNumber }}"
+      DB_PORT: "{{ PortNumber | string }}"
       DB_USER: "{{ MasterUsername }}"
