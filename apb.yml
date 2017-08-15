@@ -1,6 +1,5 @@
-id: 0aaafc10-132b-41a8-a58c-73268ff1006a
 name: rds-mysql-apb
-image: docker.io/djwhatle/rds-mysql-apb
+image: docker.io/ansibleplaybookbundle/rds-mysql-apb
 description: 'Managed relational database service with a choice of six popular database engines.  Set up, operate, and scale a relational database in the cloud with just a few clicks.'
 tags:
   - amazon
