@@ -1,196 +1,199 @@
-id: 0aaafc10-132b-41a8-a58c-73268ff1006a
 name: rds-mysql-apb
-image: ansibleplaybookbundle/rds-mysql-apb
+image: docker.io/ansibleplaybookbundle/rds-mysql-apb
 description: 'Managed relational database service with a choice of six popular database engines.  Set up, operate, and scale a relational database in the cloud with just a few clicks.'
 tags:
   - amazon
   - database
 bindable: true
 async: optional
-parameters:
-  - stack_identifier:
-      title: Unique Stack Identifier
-      description: 'Unique identifier to be included in the CloudFormation Stack Name to prevent naming collisions. Must only contain alphanumeric characters and hyphens. (e.g. "sample-rds-stack", "production-rds-04-2017")'
-      type: string
-  - aws_access_key:
-      title: AWS Access Key
-      description: 'AWS Access Key to authenticate to AWS with.'
-      type: string
-  - aws_secret_key:
-      title: AWS Secret Key
-      description: 'AWS Secret Key to authenticate to AWS with.'
-      type: string
-  - region:
-      title: AWS Region
-      description: 'AWS Region to create RDS instance in.'
-      type: string
-      default: "us-west-2"
-  - ApplicationName:
-      title: Application Name
-      description: 'RDS Application name (e.g. "mysql5.7")'
-      type: string
-      default: "mysql5.7"
-  - DBInstanceClass:
-      title: DB Instance Class
-      description: 'The compute and memory capacity of the DB instance. (values: "db.m4.large", "db.m4.xlarge", "db.m4.2xlarge", "db.m4.4xlarge", "db.m4.10xlarge", "db.r3.large", "db.r3.xlarge", "db.r3.2xlarge", "db.r3.4xlarge", "db.r3.8xlarge", "db.t2.large")'
-      type: string
-      default: "db.r3.2xlarge"
-  - DBName:
-      title: DB Name
-      description: 'The name of the database to create when the DB instance is created. (letters and numbers, max 64 chars)'
-      type: string
-      default: "myrdsdb1"
-  - EngineVersion:
-      title: Engine Version
-      description: 'The version number of the database engine to use. (values: "5.7.17", "5.6.35", "5.5.54")'
-      type: string
-      default: "5.7.17"
-  - MysqlServerTimezone:
-      title: MySQL Server Timezone
-      description: 'The default timezone for the database engine to use. (values: "UTC", "US/Pacific", "US/Eastern", etc.)'
-      type: string
-      default: "UTC"
-  - VpcId:
-      title: VPC ID
-      description: 'VPC ID (e.g. "vpc-6c9f1a0b")'
-      type: string
-  - PreferredBackupWindow:
-      title: Preferred Backup Window
-      description: 'The daily time range in UTC during which automated backups are created (if automated backups are enabled). Cannot overlap with Preferred Maintenance Window Time (e.g. "00:00-02:00")'
-      type: string
-      default: "00:00-02:00"
-  - BackupRetentionPeriod:
-      title: Backup Retention Period
-      description: 'The number of days during which automatic DB snapshots are retained. Setting 0 disables automatic snapshots, maximum value is 35.'
-      type: int
-      default: 35
-  - CopyTagsToSnapshot:
-      title: Copy Tags To Snapshots
-      description: 'Indicates whether to copy all of the user-defined tags from the DB instance to snapshots of the DB instance. (values: "true", "false")'
-      type: string
-      default: "true"
-  - PortNumber:
-      title: Port Number
-      description: 'The port number for the database server to listen on. (values in range 1150-65535)'
-      type: int
-      default: 10001
-  - PubliclyAccessible:
-      title: Publicly Accessible
-      description: 'Indicates whether the DB instance is an Internet-facing instance. (values: "true", "false")'
-      type: string
-      default: "false"
-  - PreferredMaintenanceWindowDay:
-      title: Day of Preferred Maintenance Window
-      description: 'The day of the week which RDS maintenance will be performed (e.g. "Mon")'
-      type: string
-      default: "Mon"
-  - PreferredMaintenanceWindowStartTime:
-      title: Preferred Maintenance Window Start Time
-      description: 'The weekly start time in UTC for the RDS maintenance window, must be less than Preferred Maintenance Window End Time and cannot overlap with Preferred Backup Window (e.g. "04:00")'
-      type: string
-      default: "04:00"
-  - PreferredMaintenanceWindowEndTime:
-      title: Preferred Maintenance Window End Time
-      description: 'The weekly end time in UTC for the RDS maintenance window, must be less than Preferred Maintenance Window End Time and cannot overlap with Preferred Backup Window (e.g. "04:00")'
-      type: string
-      default: "06:00"
-  - MonitoringInterval:
-      title: Monitoring Interval
-      description: 'The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. (Values: 1, 5, 10, 15, 30, 60)'
-      type: int
-      default: 1
-  - MultiAZ:
-      title: Multi AZ
-      description: 'Specifies if the database instance is a multiple Availability Zone deployment. (values: "true", "false")'
-      type: string
-      default: "true"
-  - NumberOfAvailabilityZones:
-      title: Number of Availability Zones
-      description: 'Quantity of subnets to use, if selecting more than 2 the region this stack is in must have at least that many Availability Zones'
-      type: int
-      default: 3
-  - AvailabilityZones:
-      title: Availability Zones
-      description: 'Comma separated list of availability zones to use, must be the same quantity as specified in Number of Availability Zones (e.g. "us-west-2a,us-west-2b,us-west-2c")'
-      type: string
-      default: "us-west-2a,us-west-2b,us-west-2c"
-  - CidrBlocks:
-      title: CIDR Blocks
-      description: 'Comma seperated list of CIDR blocks to place RDS into, must be the same quantity as specified in Number of Availability Zones (e.g. "10.0.96.0/20,10.0.112.0/20,10.0.128.0/20")'
-      type: string
-  - AccessCidr:
-      title: Access CIDR
-      description: 'CIDR block to allow to connect to database (e.g. "10.0.0.0/16")'
-      type: string
-  - AllocatedStorageAndIops:
-      title: Allocated Storage and IOPS
-      description: 'Storage/IOPS to allocate (e.g. "100 GB / 1,000 IOPS", "300 GB / 3,000 IOPS", ..., "6,000 GB / 60,000 IOPS")'
-      type: string
-      default: "100 GB / 1,000 IOPS"
-  - MasterUsername:
-      title: Master User Name
-      description: 'Master database Username'
-      type: string
-      default: sqlsa
-  - MasterUserPassword:
-      title: Master User Password
-      description: 'Master user database Password'
-      type: string
-      default: sqlsa123
-  - AllowMajorVersionUpgrade:
-      title: Allow Major Version Upgrade
-      description: 'If you update the Engine Version property to a version that''s different from the DB instance''s current major version, set this property to true. (values: "true", "false")'
-      type: string
-      default: "true"
-  - AutoMinorVersionUpgrade:
-      title: Allow Minor Version Upgrade
-      description: 'Indicates that minor engine upgrades are applied automatically to the DB instance during the maintenance window. (values: "true", "false")'
-      type: string
-      default: "true"
-  - StorageEncrypted:
-      title: Storage Encrypted
-      description: 'Indicates whether the DB instance is encrypted. (values: "true", "false")'
-      type: string
-      default: "true"
-  - StorageType:
-      title: Storage Type
-      description: 'Specifies the storage type to be associated with the DB instance. (values: "io1", "gp2", "standard")'
-      type: string
-      default: io1
-required:
-  - stack_identifier
-  - aws_access_key
-  - aws_secret_key
-  - region
-  - ApplicationName
-  - VpcId
-  - NumberOfAvailabilityZones
-  - PreferredBackupWindow
-  - PreferredMaintenanceWindowDay
-  - PreferredMaintenanceWindowStartTime
-  - PreferredMaintenanceWindowEndTime
-  - MonitoringInterval
-  - AvailabilityZones
-  - CidrBlocks
-  - AccessCidr
-  - AllocatedStorageAndIops
-  - MasterUsername
-  - MasterUserPassword
-  - AllowMajorVersionUpgrade
-  - StorageType
-  - MultiAZ
-  - AutoMinorVersionUpgrade
-  - StorageEncrypted
-  - BackupRetentionPeriod
-  - PortNumber
-  - CopyTagsToSnapshot
-  - PubliclyAccessible
-  - DBInstanceClass
-  - DBName
-  - EngineVersion
-  - MysqlServerTimezone
-metadata:
-  displayName: "Amazon RDS"
-  longDescription: "Amazon Relational Database Service (Amazon RDS) makes it easy to set up, operate, and scale a relational database in the cloud. It provides cost-efficient and resizable capacity while managing time-consuming database administration tasks, freeing you up to focus on your applications and business. Amazon RDS provides you six familiar database engines to choose from, including Amazon Aurora, PostgreSQL, MySQL, MariaDB, Oracle, and Microsoft SQL Server."
-  imageUrl: "https://d0.awsstatic.com/cloud-storage/Deck_Databases.png"
-  documentationUrl: "https://aws.amazon.com/rds/"
+plans:
+  - name: default
+    description: 'MySQL RDS Database'
+    free: false
+    parameters:
+      - name: stack_identifier
+        required: true
+        title: Unique Stack Identifier
+        description: 'Unique identifier to be included in the CloudFormation Stack Name to prevent naming collisions. Must only contain alphanumeric characters and hyphens. (e.g. "sample-rds-stack", "production-rds-04-2017")'
+        type: string
+      - name: aws_access_key
+        required: true
+        title: AWS Access Key
+        description: 'AWS Access Key to authenticate to AWS with.'
+        type: string
+      - name: aws_secret_key
+        required: true
+        title: AWS Secret Key
+        description: 'AWS Secret Key to authenticate to AWS with.'
+        type: string
+      - name: region
+        required: true
+        title: AWS Region
+        description: 'AWS Region to create RDS instance in.'
+        type: string
+        default: "us-west-2"
+      - name: ApplicationName
+        required: true
+        title: Application Name
+        description: 'RDS Application name (e.g. "mysql5.7")'
+        type: string
+        default: "mysql5.7"
+      - name: DBInstanceClass
+        required: true
+        title: DB Instance Class
+        description: 'The compute and memory capacity of the DB instance. (values: "db.m4.large", "db.m4.xlarge", "db.m4.2xlarge", "db.m4.4xlarge", "db.m4.10xlarge", "db.r3.large", "db.r3.xlarge", "db.r3.2xlarge", "db.r3.4xlarge", "db.r3.8xlarge", "db.t2.large")'
+        type: string
+        default: "db.r3.2xlarge"
+      - name: DBName
+        required: true
+        title: DB Name
+        description: 'The name of the database to create when the DB instance is created. (letters and numbers, max 64 chars)'
+        type: string
+        default: "myrdsdb1"
+      - name: EngineVersion
+        required: true
+        title: Engine Version
+        description: 'The version number of the database engine to use. (values: "5.7.17", "5.6.35", "5.5.54")'
+        type: string
+        default: "5.7.17"
+      - name: MysqlServerTimezone
+        required: true
+        title: MySQL Server Timezone
+        description: 'The default timezone for the database engine to use. (values: "UTC", "US/Pacific", "US/Eastern", etc.)'
+        type: string
+        default: "UTC"
+      - name: VpcId
+        required: true
+        title: VPC ID
+        description: 'VPC ID (e.g. "vpc-6c9f1a0b")'
+        type: string
+      - name: PreferredBackupWindow
+        required: true
+        title: Preferred Backup Window
+        description: 'The daily time range in UTC during which automated backups are created (if automated backups are enabled). Cannot overlap with Preferred Maintenance Window Time (e.g. "00:00-02:00")'
+        type: string
+        default: "00:00-02:00"
+      - name: BackupRetentionPeriod
+        required: true
+        title: Backup Retention Period
+        description: 'The number of days during which automatic DB snapshots are retained. Setting 0 disables automatic snapshots, maximum value is 35.'
+        type: int
+        default: 35
+      - name: CopyTagsToSnapshot
+        required: true
+        title: Copy Tags To Snapshots
+        description: 'Indicates whether to copy all of the user-defined tags from the DB instance to snapshots of the DB instance. (values: "true", "false")'
+        type: string
+        default: "true"
+      - name: PortNumber
+        required: true
+        title: Port Number
+        description: 'The port number for the database server to listen on. (values in range 1150-65535)'
+        type: int
+        default: 10001
+      - name: PubliclyAccessible
+        required: true
+        title: Publicly Accessible
+        description: 'Indicates whether the DB instance is an Internet-facing instance. (values: "true", "false")'
+        type: string
+        default: "false"
+      - name: PreferredMaintenanceWindowDay
+        required: true
+        title: Day of Preferred Maintenance Window
+        description: 'The day of the week which RDS maintenance will be performed (e.g. "Mon")'
+        type: string
+        default: "Mon"
+      - name: PreferredMaintenanceWindowStartTime
+        required: true
+        title: Preferred Maintenance Window Start Time
+        description: 'The weekly start time in UTC for the RDS maintenance window, must be less than Preferred Maintenance Window End Time and cannot overlap with Preferred Backup Window (e.g. "04:00")'
+        type: string
+        default: "04:00"
+      - name: PreferredMaintenanceWindowEndTime
+        required: true
+        title: Preferred Maintenance Window End Time
+        description: 'The weekly end time in UTC for the RDS maintenance window, must be less than Preferred Maintenance Window End Time and cannot overlap with Preferred Backup Window (e.g. "04:00")'
+        type: string
+        default: "06:00"
+      - name: MonitoringInterval
+        required: true
+        title: Monitoring Interval
+        description: 'The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. (Values: 1, 5, 10, 15, 30, 60)'
+        type: int
+        default: 1
+      - name: MultiAZ
+        required: true
+        title: Multi AZ
+        description: 'Specifies if the database instance is a multiple Availability Zone deployment. (values: "true", "false")'
+        type: string
+        default: "true"
+      - name: NumberOfAvailabilityZones
+        required: true
+        title: Number of Availability Zones
+        description: 'Quantity of subnets to use, if selecting more than 2 the region this stack is in must have at least that many Availability Zones'
+        type: int
+        default: 3
+      - name: AvailabilityZones
+        required: true
+        title: Availability Zones
+        description: 'Comma separated list of availability zones to use, must be the same quantity as specified in Number of Availability Zones (e.g. "us-west-2a,us-west-2b,us-west-2c")'
+        type: string
+        default: "us-west-2a,us-west-2b,us-west-2c"
+      - name: CidrBlocks
+        required: true
+        title: CIDR Blocks
+        description: 'Comma seperated list of CIDR blocks to place RDS into, must be the same quantity as specified in Number of Availability Zones (e.g. "10.0.96.0/20,10.0.112.0/20,10.0.128.0/20")'
+        type: string
+      - name: AccessCidr
+        required: true
+        title: Access CIDR
+        description: 'CIDR block to allow to connect to database (e.g. "10.0.0.0/16")'
+        type: string
+      - name: AllocatedStorageAndIops
+        required: true
+        title: Allocated Storage and IOPS
+        description: 'Storage/IOPS to allocate (e.g. "100 GB / 1,000 IOPS", "300 GB / 3,000 IOPS", ..., "6,000 GB / 60,000 IOPS")'
+        type: string
+        default: "100 GB / 1,000 IOPS"
+      - name: MasterUsername
+        required: true
+        title: Master User Name
+        description: 'Master database Username'
+        type: string
+        default: sqlsa
+      - name: MasterUserPassword
+        required: true
+        title: Master User Password
+        description: 'Master user database Password'
+        type: string
+        default: sqlsa123
+      - name: AllowMajorVersionUpgrade
+        required: true
+        title: Allow Major Version Upgrade
+        description: 'If you update the Engine Version property to a version that''s different from the DB instance''s current major version, set this property to true. (values: "true", "false")'
+        type: string
+        default: "true"
+      - name: AutoMinorVersionUpgrade
+        required: true
+        title: Allow Minor Version Upgrade
+        description: 'Indicates that minor engine upgrades are applied automatically to the DB instance during the maintenance window. (values: "true", "false")'
+        type: string
+        default: "true"
+      - name: StorageEncrypted
+        required: true
+        title: Storage Encrypted
+        description: 'Indicates whether the DB instance is encrypted. (values: "true", "false")'
+        type: string
+        default: "true"
+      - name: StorageType
+        required: true
+        title: Storage Type
+        description: 'Specifies the storage type to be associated with the DB instance. (values: "io1", "gp2", "standard")'
+        type: string
+        default: io1
+    metadata:
+      displayName: "Amazon RDS"
+      longDescription: "Amazon Relational Database Service (Amazon RDS) makes it easy to set up, operate, and scale a relational database in the cloud. It provides cost-efficient and resizable capacity while managing time-consuming database administration tasks, freeing you up to focus on your applications and business. Amazon RDS provides you six familiar database engines to choose from, including Amazon Aurora, PostgreSQL, MySQL, MariaDB, Oracle, and Microsoft SQL Server."
+      imageUrl: "https://d0.awsstatic.com/cloud-storage/Deck_Databases.png"
+      documentationUrl: "https://aws.amazon.com/rds/"
+      cost: $0.00

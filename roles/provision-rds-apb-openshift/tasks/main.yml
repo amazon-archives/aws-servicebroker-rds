@@ -46,10 +46,11 @@
     rds_endpoint_address: "{{ rds.stack_outputs.EndpointAddress }}"
 
 - name: Encode bind credentials
-  shell: 'echo "{\"MYSQL_HOST\": \"{{ rds_endpoint_address }}\", \"MYSQL_PORT\": \"{{ PortNumber }}\", \"MYSQL_USER\": \"{{ MasterUsername }}\", \"MYSQL_PASSWORD\": \"{{ MasterUserPassword }}\", \"MYSQL_DATABASE\": \"{{ DBName }}\"}" | base64 -w 0'
-  register: encoded_bind_credentials
-
-- name: Write bind credentials to filesystem
-  copy:
-   content="<BIND_CREDENTIALS>{{ encoded_bind_credentials.stdout }}</BIND_CREDENTIALS>"
-   dest=/etc/apb/bind-creds
+  asb_encode_binding:
+    fields:
+      DB_TYPE: "mysql"
+      DB_PASSWORD: "{{ MasterUserPassword }}"
+      DB_NAME: "{{ DBName }}"
+      DB_HOST: "{{ rds_endpoint_address }}"
+      DB_PORT: "{{ PortNumber | string }}"
+      DB_USER: "{{ MasterUsername }}"
