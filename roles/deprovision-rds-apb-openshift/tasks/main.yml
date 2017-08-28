@@ -2,7 +2,7 @@
 # Deprovision RDS service
 #############################################################################
 
-- name: Remove RDS mySQL cluster
+- name: Remove RDS MySQL cluster
   cloudformation:
     aws_access_key: "{{ aws_access_key }}"
     aws_secret_key: "{{ aws_secret_key }}"

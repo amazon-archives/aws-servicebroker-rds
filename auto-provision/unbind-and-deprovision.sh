@@ -15,4 +15,4 @@ oc delete instance ${aws_svc_name} -n ${openshift_namespace}
 # Wait for hello-world pod to terminate
 $BASH_DIR/wait-for-resource.sh delete pod ${app_name}
 # Wait for RDS MySQL deprovision to complete
-$BASH_DIR/wait-for-resource.sh completed apb ${aws_svc_name}
+$BASH_DIR/wait-for-resource.sh completed apb ${aws_svc_name} 500 5

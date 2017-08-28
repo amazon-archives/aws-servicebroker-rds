@@ -4,8 +4,9 @@ CUR_DIR="$(dirname "${BASH_SOURCE}")"
 OPENSHIFT_DIR="${CUR_DIR}/openshift"
 BASH_DIR="${CUR_DIR}/bash"
 
-source "${CUR_DIR}/bash/logs.sh"
-source "${CUR_DIR}/bash/error.sh"
+# Load functions from other bash scripts
+source "${BASH_DIR}/logs.sh"
+source "${BASH_DIR}/error.sh"
 
 # Load vars for customizing CI run per application/service
 source "${CUR_DIR}/vars.sh"
@@ -29,12 +30,23 @@ declare -r color_green="${color_start}0;32m"
 declare -r color_norm="${color_start}0m"
 
 function precheck {
-  if [ -z "${aws_secret_key}" ]; then
-    echo "AWS secret key not set in vars.sh. Exiting..."
+  # Ensure all required parameters are defined
+  for r in aws_access_key           \
+           aws_secret_key           \
+           vpc_id                   \
+           stack_identifier         \
+           aws_region               \
+           availability_zones       \
+           openshift_namespace; do
+    if [ -z "${!r}" ]; then
+      echo "Missing required parameter: ${r}"
+      missing_params=true
+    fi
+  done
+
+  if [ "$missing_params" = true ]; then
+    echo "Exiting due to missing parameters..."
     exit 1
-  elif [ -z "${aws_access_key}" ]; then
-    echo "AWS access key not set in vars.sh. Exiting..."
-    exit 2
   fi
 }
 
@@ -60,6 +72,12 @@ function provision {
   # Wait for AWS CloudFormation service provision to complete before continuing...
   ${BASH_DIR}/wait-for-resource.sh completed apb ${aws_svc_name} 500 5
   error-check "provision"
+
+  if ${RESOURCE_ERROR}; then
+    echo
+    echo "One or more resources didn't come up as expected. Exiting..."
+    exit 3
+  fi
 }
 
 function bind {

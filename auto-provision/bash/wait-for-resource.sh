@@ -7,14 +7,13 @@ POLL_ATTEMPTS=${4:-100}
 POLL_SLEEP=${5:-1}
 
 RESOURCE_ERROR=true
-NAMESPACE="${NAMESPACE:-default}"
 
 # Wait for CloudFormation APB pod completion
 if [ "${RESOURCE}" = "apb" ] && [ "${ACTION}" = "completed" ] && [ "${RESOURCE_NAME}" = "${aws_svc_name}" ]; then
   echo
   echo "Attempting to capture ${aws_svc_name_pretty} pod name..."
   # Capture CloudFormation APB pod name
-  apb_pod_name=$(oc get pods -n ${NAMESPACE} -l apb-fqname=${aws_svc_service_class_name} --show-all=false | grep apb | awk '{ print $1 }' | head -n1)
+  apb_pod_name=$(oc get pods -n ${openshift_namespace} -l apb-fqname=${aws_svc_service_class_name} --show-all=false | grep apb | awk '{ print $1 }' | head -n1)
   if [ -z "${apb_pod_name}" ]; then
 	  echo "${aws_svc_name} pod doesn't appear to be running, aborting..."
 	  RESOURCE_ERROR=true
@@ -24,7 +23,7 @@ if [ "${RESOURCE}" = "apb" ] && [ "${ACTION}" = "completed" ] && [ "${RESOURCE_N
     echo
 
     for r in $(seq ${POLL_ATTEMPTS}); do
-    	apb_pod_status=$(oc get pods -n ${NAMESPACE} | grep ${apb_pod_name} | awk '{ print $3 }')
+    	apb_pod_status=$(oc get pods -n ${openshift_namespace} | grep ${apb_pod_name} | awk '{ print $3 }')
     	if [ "${apb_pod_status}" = 'Completed' ]; then
         echo
   	    echo "${RESOURCE_NAME} ${RESOURCE} is completed at $(date +"%H:%M")."
@@ -43,8 +42,7 @@ if [ "${RESOURCE}" = "apb" ] && [ "${ACTION}" = "completed" ] && [ "${RESOURCE_N
 # Wait for pod creation
 elif [ "${RESOURCE}" = "pod" ] && [ "${ACTION}" = "create" ]; then
   for r in $(seq ${POLL_ATTEMPTS}); do
-    pod=$(oc get pods -n ${NAMESPACE} | grep ${RESOURCE_NAME} | awk $'{ print $3 }')
-    oc get pods -n ${openshift_namespace} | grep ${RESOURCE_NAME}
+    pod=$(oc get pods -n ${openshift_namespace} | grep ${RESOURCE_NAME} | awk $'{ print $3 }')
     if [ "${pod}" = 'Running' ]; then
       echo "${RESOURCE_NAME} ${RESOURCE} is running"
       RESOURCE_ERROR=false
@@ -56,7 +54,7 @@ elif [ "${RESOURCE}" = "pod" ] && [ "${ACTION}" = "create" ]; then
 # Wait for generic resource creation
 elif [ "${ACTION}" = "create" ]; then
   for r in $(seq ${POLL_ATTEMPTS}); do
-  	oc get ${RESOURCE} -n ${NAMESPACE} | grep ${RESOURCE_NAME}
+  	oc get ${RESOURCE} -n ${openshift_namespace} | grep ${RESOURCE_NAME}
   	if [ $? -eq 0 ]; then
 	    echo "${RESOURCE_NAME} ${RESOURCE} has been created"
 	    RESOURCE_ERROR=false
@@ -68,7 +66,7 @@ elif [ "${ACTION}" = "create" ]; then
 # # Wait for generic resource deletion
 elif [ "${ACTION}" = "delete" ]; then
   for r in $(seq ${POLL_ATTEMPTS}); do
-  	oc get ${RESOURCE} -n ${NAMESPACE} | grep ${RESOURCE_NAME}
+  	oc get ${RESOURCE} -n ${openshift_namespace} | grep ${RESOURCE_NAME}
   	if [ $? -eq 1 ]; then
 	    echo "${RESOURCE_NAME} ${RESOURCE} has been deleted"
 	    RESOURCE_ERROR=false
