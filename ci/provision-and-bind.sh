@@ -51,6 +51,9 @@ function precheck {
 }
 
 function provision {
+  # Create the desired namespace if it doesn't exist already
+  oc new-project ${openshift_namespace}
+
   # Create app instance from OpenShift template
   oc process -f ${OPENSHIFT_DIR}/${app_name}.yaml       \
     service_class_name="${app_service_class_name}"      \

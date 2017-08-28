@@ -3,7 +3,7 @@
 # AWS params
 export aws_access_key=""
 export aws_secret_key=""
-export vpc_id="vpc-413e8327"
+export vpc_id=""
 
 # RDS params
 export stack_identifier="autoprovision00"
