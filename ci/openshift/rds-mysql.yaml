@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: rds-mysql
+parameters:
+  - name: namespace
+  - name: service_class_name
+  - name: stack_identifier
+  - name: aws_access_key
+  - name: aws_secret_key
+  - name: aws_region
+  - name: availability_zones
+  - name: vpc_id
+objects:
+  - apiVersion: servicecatalog.k8s.io/v1alpha1
+    kind: Instance
+    metadata:
+      name: rds-mysql
+      namespace: ${namespace}
+    spec:
+      serviceClassName: ${service_class_name}
+      planName: default
+      parameters:
+        stack_identifier: ${stack_identifier}
+        aws_access_key: ${aws_access_key}
+        aws_secret_key: ${aws_secret_key}
+        region: ${aws_region}
+        ApplicationName: "mysql5.7"
+        DBInstanceClass: "db.r3.2xlarge"
+        DBName: "myrdsdb1"
+        EngineVersion: "5.7.17"
+        MysqlServerTimezone: "UTC"
+        VpcId: ${vpc_id}
+        PreferredBackupWindow: "00:00-02:00"
+        BackupRetentionPeriod: 35
+        CopyTagsToSnapshot: "true"
+        PortNumber: 10001
+        PubliclyAccessible: "true"
+        PreferredMaintenanceWindowDay: "Mon"
+        PreferredMaintenanceWindowStartTime: "04:00"
+        PreferredMaintenanceWindowEndTime: "06:00"
+        MonitoringInterval: 1
+        MultiAZ: "true"
+        NumberOfAvailabilityZones: 3
+        AvailabilityZones: ${availability_zones}
+        CidrBlocks: "10.0.96.0/20,10.0.112.0/20,10.0.128.0/20"
+        AccessCidr: "0.0.0.0/0"
+        AllocatedStorageAndIops: "100 GB / 1,000 IOPS"
+        MasterUsername: "sqlsa"
+        MasterUserPassword: "autoprovision123"
+        AllowMajorVersionUpgrade: "true"
+        AutoMinorVersionUpgrade: "true"
+        StorageEncrypted: "true"
+        StorageType: "io1"
