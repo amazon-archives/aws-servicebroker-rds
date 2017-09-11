@@ -108,8 +108,8 @@ function bind-credential-check {
       print-with-green "Pod presets found in the ${app_name} pod"
       break
   	else
-	    print-with-yellow "Pod presets not found in the ${app_name} pod"
-	    print-with-yellow "Retrying..."
+      print-with-yellow "Pod presets not found in the ${app_name} pod"
+      print-with-yellow "Retrying..."
   	fi
   done
 
