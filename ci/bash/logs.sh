@@ -2,15 +2,15 @@
 
 function redirect-output {
     if ${LOCAL_CI}; then
-	# If local CI don't output logs. Let the developer check them.
-	exec 3>&1 4>&2 >/dev/null
+  # If local CI don't output logs. Let the developer check them.
+  exec 3>&1 4>&2 >/dev/null
     fi
 }
 
 function restore-output {
     if ${LOCAL_CI}; then
-	# Restore stdout and stderr
-	exec 1>&3 2>&4 3>&- 4>&-
+  # Restore stdout and stderr
+  exec 1>&3 2>&4 3>&- 4>&-
     fi
 }
 

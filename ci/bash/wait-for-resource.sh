@@ -15,8 +15,8 @@ if [ "${RESOURCE}" = "apb" ] && [ "${ACTION}" = "completed" ] && [ "${RESOURCE_N
   # Capture CloudFormation APB pod name
   apb_pod_name=$(oc get pods -n ${openshift_namespace} -l apb-fqname=${aws_svc_service_class_name} --show-all=false | grep apb | awk '{ print $1 }' | head -n1)
   if [ -z "${apb_pod_name}" ]; then
-	  echo "${aws_svc_name} pod doesn't appear to be running, aborting..."
-	  RESOURCE_ERROR=true
+    echo "${aws_svc_name} pod doesn't appear to be running, aborting..."
+    exit 3
   else
     echo "Captured ${aws_svc_name_pretty} APB pod name: ${apb_pod_name}"
     echo "Current time: $(date +"%H:%M")"
@@ -38,7 +38,7 @@ if [ "${RESOURCE}" = "apb" ] && [ "${ACTION}" = "completed" ] && [ "${RESOURCE_N
     	echo "Waiting for ${RESOURCE_NAME} ${RESOURCE} to complete... ${r}"
     	sleep ${POLL_SLEEP}
     done
-	fi
+  fi
 # Wait for pod creation
 elif [ "${RESOURCE}" = "pod" ] && [ "${ACTION}" = "create" ]; then
   for r in $(seq ${POLL_ATTEMPTS}); do
@@ -56,9 +56,9 @@ elif [ "${ACTION}" = "create" ]; then
   for r in $(seq ${POLL_ATTEMPTS}); do
   	oc get ${RESOURCE} -n ${openshift_namespace} | grep ${RESOURCE_NAME}
   	if [ $? -eq 0 ]; then
-	    echo "${RESOURCE_NAME} ${RESOURCE} has been created"
-	    RESOURCE_ERROR=false
-	    break
+      echo "${RESOURCE_NAME} ${RESOURCE} has been created"
+      RESOURCE_ERROR=false
+      break
   	fi
   	echo "Waiting for ${RESOURCE_NAME} ${RESOURCE} to be created"
   	sleep ${POLL_SLEEP}
@@ -68,9 +68,9 @@ elif [ "${ACTION}" = "delete" ]; then
   for r in $(seq ${POLL_ATTEMPTS}); do
   	oc get ${RESOURCE} -n ${openshift_namespace} | grep ${RESOURCE_NAME}
   	if [ $? -eq 1 ]; then
-	    echo "${RESOURCE_NAME} ${RESOURCE} has been deleted"
-	    RESOURCE_ERROR=false
-	    break
+      echo "${RESOURCE_NAME} ${RESOURCE} has been deleted"
+      RESOURCE_ERROR=false
+      break
   	fi
   	echo "Waiting for ${RESOURCE_NAME} ${RESOURCE} to be deleted"
   	sleep ${POLL_SLEEP}
