@@ -41,9 +41,9 @@
      Description: "{{ ansible_user_id }} RDS {{ ApplicationName }}"
   register: rds
 
-- name: Recording database endpoint address
-  set_fact:
-    rds_endpoint_address: "{{ rds.stack_outputs.EndpointAddress }}"
+- name: Check for RDS CloudFormation error logs
+  debug:
+    var: rds.log
 
 - name: Encode bind credentials
   asb_encode_binding:
@@ -51,6 +51,7 @@
       DB_TYPE: "mysql"
       DB_PASSWORD: "{{ MasterUserPassword }}"
       DB_NAME: "{{ DBName }}"
-      DB_HOST: "{{ rds_endpoint_address }}"
+      DB_HOST: "{{ rds.stack_outputs.EndpointAddress }}"
       DB_PORT: "{{ PortNumber | string }}"
       DB_USER: "{{ MasterUsername }}"
+  when: rds.log | length < 1
