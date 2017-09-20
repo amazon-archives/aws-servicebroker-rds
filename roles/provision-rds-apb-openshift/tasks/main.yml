@@ -6,7 +6,7 @@
    state: "present"
    region: "{{ region }}"
    disable_rollback: false
-   template: "{{ role_path }}/files/rds-mysql.yml"
+   template: "{{ role_path }}/files/rds-mysql.template"
    template_parameters:
      ApplicationName: "{{ ApplicationName }}"
      VpcId: "{{ VpcId }}"
