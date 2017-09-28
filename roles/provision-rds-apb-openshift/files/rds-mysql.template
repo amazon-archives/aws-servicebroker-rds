@@ -24,12 +24,12 @@
             ]
         },
         "AllowMajorVersionUpgrade": {
-            "Description": "If you update the EngineVersion property to a version that's different from the DB instance's current major version, set this property to true.",
+            "Description": "If you update the EngineVersion property to a version that's different from the DB instance's current major version, set this property to True.",
             "Type": "String",
-            "Default": "false",
+            "Default": "False",
             "AllowedValues": [
-                "true",
-                "false"
+                "True",
+                "False"
             ]
         },
         "ApplicationName": {
@@ -39,10 +39,10 @@
         "AutoMinorVersionUpgrade": {
             "Description": "Indicates that minor engine upgrades are applied automatically to the DB instance during the maintenance window.",
             "Type": "String",
-            "Default": "true",
+            "Default": "True",
             "AllowedValues": [
-                "true",
-                "false"
+                "True",
+                "False"
             ]
         },
         "AvailabilityZones": {
@@ -64,10 +64,10 @@
         "CopyTagsToSnapshot": {
             "Description": "Indicates whether to copy all of the user-defined tags from the DB instance to snapshots of the DB instance.",
             "Type": "String",
-            "Default": "true",
+            "Default": "True",
             "AllowedValues": [
-                "true",
-                "false"
+                "True",
+                "False"
             ]
         },
         "DBInstanceClass": {
@@ -130,7 +130,7 @@
         "MasterUserPassword": {
             "Description": "Master user database Password",
             "Type": "String",
-            "NoEcho": "true"
+            "NoEcho": "True"
         },
         "MasterUsername": {
             "Description": "Master database Username",
@@ -153,10 +153,10 @@
         "MultiAZ": {
             "Description": "Specifies if the database instance is a multiple Availability Zone deployment.",
             "Type": "String",
-            "Default": "true",
+            "Default": "True",
             "AllowedValues": [
-                "true",
-                "false"
+                "True",
+                "False"
             ]
         },
         "MysqlServerTimezone": {
@@ -375,19 +375,19 @@
         "PubliclyAccessible": {
             "Description": "Indicates whether the DB instance is an Internet-facing instance.",
             "Type": "String",
-            "Default": "false",
+            "Default": "False",
             "AllowedValues": [
-                "true",
-                "false"
+                "True",
+                "False"
             ]
         },
         "StorageEncrypted": {
             "Description": "Indicates whether the DB instance is encrypted.",
             "Type": "String",
-            "Default": "true",
+            "Default": "True",
             "AllowedValues": [
-                "true",
-                "false"
+                "True",
+                "False"
             ]
         },
         "StorageType": {
