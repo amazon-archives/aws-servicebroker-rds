@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: app-to-aws-svc-binding
+parameters:
+  - name: namespace
+  - name: bind_credential_name
+  - name: app_name
+  - name: aws_svc_name
+objects:
+  - apiVersion: servicecatalog.k8s.io/v1alpha1
+    kind: Binding
+    metadata:
+      name: ${bind_credential_name}
+      namespace: ${namespace}
+    spec:
+      instanceRef:
+        name: ${aws_svc_name}
+      secretName: ${bind_credential_name}
+      alphaPodPresetTemplate:
+        name: ${bind_credential_name}
+        selector:
+          matchLabels:
+            app: ${app_name}
