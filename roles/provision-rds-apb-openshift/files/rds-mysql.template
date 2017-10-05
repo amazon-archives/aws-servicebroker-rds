@@ -255,6 +255,7 @@
             "Type": "String",
             "Default": "2",
             "AllowedValues": [
+                "1",
                 "2",
                 "3",
                 "4",
