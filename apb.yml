@@ -28,12 +28,14 @@ plans:
         title: AWS Access Key
         description: 'AWS Access Key to authenticate to AWS with.'
         type: string
+        display_type: password
         display_group: AWS Account Information
       - name: aws_secret_key
         required: true
         title: AWS Secret Key
         description: 'AWS Secret Key to authenticate to AWS with.'
         type: string
+        display_type: password
         display_group: AWS Account Information
       ###############
       # RDS Settings
