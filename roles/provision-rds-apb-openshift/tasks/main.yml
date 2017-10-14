@@ -1,44 +1,48 @@
+- name: generate b62 hash
+  shell: "16to62 {{ params_hash }}"
+  register: command_output
+- name: set fact
+  set_fact:
+    stack_suffix: "{{ command_output.stdout }}"
+
 - name: Launch RDS MySQL cluster
   cloudformation:
-   aws_access_key: "{{ aws_access_key }}"
-   aws_secret_key: "{{ aws_secret_key }}"
-   stack_name: "apb-RDS-{{ stack_identifier }}"
-   state: "present"
-   region: "{{ region }}"
-   disable_rollback: false
-   template: "{{ role_path }}/files/rds-mysql.template"
-   template_parameters:
-     ApplicationName: "{{ ApplicationName }}"
-     VpcId: "{{ VpcId }}"
-     NumberOfAvailabilityZones: "{{ NumberOfAvailabilityZones | string }}"
-     PreferredBackupWindow: "{{ PreferredBackupWindow }}"
-     PreferredMaintenanceWindowDay: "{{ PreferredMaintenanceWindowDay }}"
-     PreferredMaintenanceWindowStartTime: "{{ PreferredMaintenanceWindowStartTime }}"
-     PreferredMaintenanceWindowEndTime: "{{ PreferredMaintenanceWindowEndTime }}"
-     MonitoringInterval: "{{ MonitoringInterval | string }}"
-     AvailabilityZones: "{{ AvailabilityZones }}"
-     CidrBlocks: "{{ CidrBlocks }}"
-     AccessCidr: "{{ AccessCidr }}"
-     AllocatedStorageAndIops: "{{ AllocatedStorageAndIops }}"
-     MasterUsername: "{{ MasterUsername }}"
-     MasterUserPassword: "{{ MasterUserPassword }}"
-     AllowMajorVersionUpgrade: "{{ AllowMajorVersionUpgrade | string }}"
-     StorageType: "{{ StorageType }}"
-     MultiAZ: "{{ MultiAZ | string }}"
-     AutoMinorVersionUpgrade: "{{ AutoMinorVersionUpgrade | string }}"
-     StorageEncrypted: "{{ StorageEncrypted | string }}"
-     BackupRetentionPeriod: "{{ BackupRetentionPeriod | string }}"
-     PortNumber: "{{ PortNumber | string }}"
-     CopyTagsToSnapshot: "{{ CopyTagsToSnapshot | string }}"
-     PubliclyAccessible: "{{ PubliclyAccessible | string }}"
-     DBInstanceClass: "{{ DBInstanceClass }}"
-     DBName: "{{ DBName }}"
-     EngineVersion: "{{ EngineVersion }}"
-     MysqlServerTimezone: "{{ MysqlServerTimezone }}"
-   tags:
-     Stack: "ansible-cloudformation"
-     Application: "ansible-rds-mysql"
-     Description: "{{ ansible_user_id }} RDS {{ ApplicationName }}"
+    stack_name: "apb-RDS-{{ stack_suffix }}"
+    state: "present"
+    region: "{{ region }}"
+    disable_rollback: false
+    template: "{{ role_path }}/files/rds-mysql.template"
+    role_arn: "{{ aws_cloudformation_role_arn }}"
+    template_parameters:
+      ApplicationName: "{{ application_name }}"
+      VpcId: "{{ VpcId }}"
+      NumberOfAvailabilityZones: "{{ NumberOfAvailabilityZones | string }}"
+      PreferredBackupWindow: "{{ PreferredBackupWindow }}"
+      PreferredMaintenanceWindowDay: "{{ PreferredMaintenanceWindowDay }}"
+      PreferredMaintenanceWindowStartTime: "{{ PreferredMaintenanceWindowStartTime }}"
+      PreferredMaintenanceWindowEndTime: "{{ PreferredMaintenanceWindowEndTime }}"
+      MonitoringInterval: "{{ MonitoringInterval | string }}"
+      AvailabilityZones: "{{ AvailabilityZones }}"
+      CidrBlocks: "{{ CidrBlocks }}"
+      AccessCidr: "{{ AccessCidr }}"
+      AllocatedStorageAndIops: "{{ AllocatedStorageAndIops }}"
+      MasterUsername: "{{ MasterUsername }}"
+      MasterUserPassword: "{{ MasterUserPassword }}"
+      AllowMajorVersionUpgrade: "{{ AllowMajorVersionUpgrade | string }}"
+      StorageType: "{{ StorageType }}"
+      MultiAZ: "{{ MultiAZ | string }}"
+      AutoMinorVersionUpgrade: "{{ AutoMinorVersionUpgrade | string }}"
+      StorageEncrypted: "{{ StorageEncrypted | string }}"
+      BackupRetentionPeriod: "{{ BackupRetentionPeriod | string }}"
+      PortNumber: "{{ PortNumber | string }}"
+      CopyTagsToSnapshot: "{{ CopyTagsToSnapshot | string }}"
+      PubliclyAccessible: "{{ PubliclyAccessible | string }}"
+      DBInstanceClass: "{{ DBInstanceClass }}"
+      DBName: "{{ DBName }}"
+      EngineVersion: "{{ EngineVersion }}"
+      MysqlServerTimezone: "{{ MysqlServerTimezone }}"
+    tags:
+      ServiceBrokerId: "{{ application_name }}"
   register: rds
 
 - name: Check for RDS CloudFormation error logs

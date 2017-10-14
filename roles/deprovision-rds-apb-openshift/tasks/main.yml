@@ -1,11 +1,16 @@
 #############################################################################
 # Deprovision RDS service
 #############################################################################
-
+- name: generate b62 hash
+  shell: "16to62 {{ params_hash }}"
+  register: command_output
+- name: set fact
+  set_fact:
+    stack_suffix: "{{ command_output.stdout }}"
 - name: Remove RDS MySQL cluster
   cloudformation:
     aws_access_key: "{{ aws_access_key }}"
     aws_secret_key: "{{ aws_secret_key }}"
-    stack_name: "apb-RDS-{{ stack_identifier }}"
+    stack_name: "apb-RDS-{{ stack_suffix }}"
     state: "absent"
     region: "{{ region }}"

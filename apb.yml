@@ -36,22 +36,33 @@ plans:
         description: 'AWS Secret Key to authenticate to AWS with.'
         type: string
         display_group: AWS Account Information
-      ###############
-      # RDS Settings
-      ###############
-      - name: stack_identifier
+      - name: aws_cloudformation_role_arn
         required: true
-        title: Unique Stack Identifier
-        description: 'Unique identifier to be included in the CloudFormation Stack Name to prevent naming collisions. Must only contain alphanumeric characters and hyphens. (e.g. "sample-rds-stack", "production-rds-04-2017")'
+        title: AWS Cloudformation role ARN
+        description: 'IAM role ARN for use as Cloudformation Stack Role.'
         type: string
-        display_group: RDS Settings
-      - name: ApplicationName
+        display_group: AWS Account Information
+      - name: region
         required: true
-        title: Application Name
-        description: 'RDS Application name'
-        type: string
-        default: "mysql5.7"
-        display_group: RDS Settings
+        title: AWS Region
+        description: 'AWS Region to create RDS instance in.'
+        type: enum
+        enum:
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-south-1
+          - ap-southeast-1
+          - ap-southeast-2
+          - ca-central-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - sa-east-1
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+        default: us-west-2
       ###################################
       # Database Instance Specifications
       ###################################
@@ -123,28 +134,6 @@ plans:
         title: VPC ID
         description: 'VPC ID (e.g. "vpc-6c9f1a0b")'
         type: string
-        display_group: Network and Security
-      - name: region
-        required: true
-        title: AWS Region
-        description: 'AWS Region to create RDS instance in.'
-        type: enum
-        enum:
-          - ap-northeast-1
-          - ap-northeast-2
-          - ap-south-1
-          - ap-southeast-1
-          - ap-southeast-2
-          - ca-central-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - sa-east-1
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-        default: us-west-2
         display_group: Network and Security
       - name: PubliclyAccessible
         required: true

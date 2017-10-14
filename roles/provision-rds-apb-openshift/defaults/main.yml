@@ -1,0 +1,5 @@
+application_name: "{{ namespace }}::{{ _apb_plan_id }}"
+# build this from vars until we can get cluster_url and ServiceInstance UID
+param_strings:
+  mysql-prod: "{% if _apb_plan_id == 'mysql-prod' %}{{ namespace }}::{{ _apb_plan_id }}::{{ aws_access_key }}::{{ aws_secret_key }}::{{ aws_cloudformation_role_arn }}::{{ region }}::{{ DBInstanceClass }}::{{ EngineVersion }}::{{ AllocatedStorageAndIops }}::{{ MasterUsername }}::{{ MasterUserPassword }}::{{ VpcId }}::{{ PubliclyAccessible }}::{{ MultiAZ }}::{{ NumberOfAvailabilityZones }}::{{ AvailabilityZones }}::{{ CidrBlocks }}::{{ AccessCidr }}::{{ DBName }}::{{ PortNumber }}::{{ StorageEncrypted }}::{{ StorageType }}::{{ MysqlServerTimezone }}::{{ PreferredBackupWindow }}::{{ BackupRetentionPeriod }}::{{ CopyTagsToSnapshot }}::{{ MonitoringInterval }}::{{ PreferredMaintenanceWindowDay }}::{{ PreferredMaintenanceWindowStartTime }}::{{ PreferredMaintenanceWindowEndTime }}::{{ AllowMajorVersionUpgrade }}::{{ AutoMinorVersionUpgrade }}{% endif %}"
+params_hash: "{{ param_strings[_apb_plan_id] | checksum }}"
