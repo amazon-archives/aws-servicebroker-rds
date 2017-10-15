@@ -600,6 +600,14 @@
                     ]
                 }
             ]
+        },
+        "EncryptionEnabled": {
+            "Fn::Equals": [
+                {
+                    "Ref": "StorageEncrypted"
+                },
+                "True"
+            ]
         }
     },
     "Resources": {
@@ -734,9 +742,17 @@
                     ]
                 },
                 "KmsKeyId": {
-                    "Fn::GetAtt": [
-                        "KMSKey",
-                        "Arn"
+                    "Fn::If": [
+                        "EncryptionEnabled",
+                        {
+                            "Fn::GetAtt": [
+                                "KMSKey",
+                                "Arn"
+                            ]
+                        },
+                        {
+                            "Ref": "AWS::NoValue"
+                        }
                     ]
                 },
                 "LicenseModel": "general-public-license",
@@ -1095,6 +1111,7 @@
             }
         },
         "KMSKey": {
+            "Condition": "EncryptionEnabled",
             "Type": "AWS::KMS::Key",
             "Properties": {
                 "Description": {
