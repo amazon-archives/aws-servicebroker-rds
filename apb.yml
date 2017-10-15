@@ -38,22 +38,585 @@ plans:
         type: string
         display_type: password
         display_group: AWS Account Information
-      ###############
-      # RDS Settings
-      ###############
-      - name: stack_identifier
+      - name: aws_cloudformation_role_arn
         required: true
-        title: Unique Stack Identifier
-        description: 'Unique identifier to be included in the CloudFormation Stack Name to prevent naming collisions. Must only contain alphanumeric characters and hyphens. (e.g. "sample-rds-stack", "production-rds-04-2017")'
+        title: AWS Cloudformation role ARN
+        description: 'IAM role ARN for use as Cloudformation Stack Role.'
         type: string
-        display_group: RDS Settings
-      - name: ApplicationName
+        display_group: AWS Account Information
+      - name: region
         required: true
-        title: Application Name
-        description: 'RDS Application name'
+        title: AWS Region
+        description: 'AWS Region to create RDS instance in.'
+        type: enum
+        enum:
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-south-1
+          - ap-southeast-1
+          - ap-southeast-2
+          - ca-central-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - sa-east-1
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+        default: us-west-2
+      ###################################
+      # Database Instance Specifications
+      ###################################
+      - name: DBInstanceClass
+        required: true
+        title: DB Instance Class
+        description: 'The compute and memory capacity of the DB instance.'
+        type: enum
+        enum:
+          - db.m4.large
+          - db.m4.xlarge
+          - db.m4.2xlarge
+          - db.m4.4xlarge
+          - db.m4.10xlarge
+          - db.r3.large
+          - db.r3.xlarge
+          - db.r3.2xlarge
+          - db.r3.4xlarge
+          - db.r3.8xlarge
+          - db.t2.large
+        default: db.r3.2xlarge
+        display_group: Database Instance Specifications
+      - name: AllocatedStorageAndIops
+        required: true
+        title: Allocated Storage and IOPS
+        description: 'Storage and IOPS to allocate. These are related due to EBS characteristics'
+        type: enum
+        enum:
+         - "100 GB / 1,000 IOPS"
+         - "300 GB / 3,000 IOPS"
+         - "600 GB / 6,000 IOPS"
+         - "1,000 GB / 10,000 IOPS"
+         - "1,500 GB / 15,000 IOPS"
+         - "2,000 GB / 20,000 IOPS"
+         - "3,000 GB / 30,000 IOPS"
+         - "4,000 GB / 40,000 IOPS"
+         - "6,000 GB / 60,000 IOPS"
+        default: "100 GB / 1,000 IOPS"
+        display_group: Database Instance Specifications
+      ###################
+      # Database Options
+      ###################
+      - name: EngineVersion
+        required: true
+        title: Engine Version
+        description: 'The version number of the database engine to use.'
+        type: enum
+        enum:
+          - 5.7.17
+          - 5.6.35
+          - 5.5.54
+        default: 5.7.17
+        display_group: Database Options
+      - name: MysqlServerTimezone
+        required: true
+        title: MySQL Server Timezone
+        description: 'The default timezone for the database engine to use. '
+        type: enum
+        enum:
+          - UTC
+          - Africa/Cairo
+          - Africa/Casablanca
+          - Africa/Harare
+          - Africa/Monrovia
+          - Africa/Nairobi
+          - Africa/Tripoli
+          - Africa/Windhoek
+          - America/Araguaina
+          - America/Asuncion
+          - America/Bogota
+          - America/Caracas
+          - America/Chihuahua
+          - America/Cuiaba
+          - America/Denver
+          - America/Fortaleza
+          - America/Guatemala
+          - America/Halifax
+          - America/Manaus
+          - America/Matamoros
+          - America/Monterrey
+          - America/Montevideo
+          - America/Phoenix
+          - America/Santiago
+          - America/Tijuana
+          - Asia/Amman
+          - Asia/Ashgabat
+          - Asia/Baghdad
+          - Asia/Baku
+          - Asia/Bangkok
+          - Asia/Beirut
+          - Asia/Calcutta
+          - Asia/Damascus
+          - Asia/Dhaka
+          - Asia/Irkutsk
+          - Asia/Jerusalem
+          - Asia/Kabul
+          - Asia/Karachi
+          - Asia/Kathmandu
+          - Asia/Krasnoyarsk
+          - Asia/Magadan
+          - Asia/Muscat
+          - Asia/Novosibirsk
+          - Asia/Riyadh
+          - Asia/Seoul
+          - Asia/Shanghai
+          - Asia/Singapore
+          - Asia/Taipei
+          - Asia/Tehran
+          - Asia/Tokyo
+          - Asia/Ulaanbaatar
+          - Asia/Vladivostok
+          - Asia/Yakutsk
+          - Asia/Yerevan
+          - Atlantic/Azores
+          - Australia/Adelaide
+          - Australia/Brisbane
+          - Australia/Darwin
+          - Australia/Hobart
+          - Australia/Perth
+          - Australia/Sydney
+          - Canada/Newfoundland
+          - Canada/Saskatchewan
+          - Brazil/East
+          - Europe/Amsterdam
+          - Europe/Athens
+          - Europe/Dublin
+          - Europe/Helsinki
+          - Europe/Istanbul
+          - Europe/Kaliningrad
+          - Europe/Moscow
+          - Europe/Paris
+          - Europe/Prague
+          - Europe/Sarajevo
+          - Pacific/Auckland
+          - Pacific/Fiji
+          - Pacific/Guam
+          - Pacific/Honolulu
+          - Pacific/Samoa
+          - US/Alaska
+          - US/Central
+          - US/Eastern
+          - US/East-Indiana
+          - US/Pacific
+        default: UTC
+        display_group: Database Options
+      #######################
+      # Network and Security
+      #######################
+      - name: VpcId
+        required: true
+        title: VPC ID
+        description: 'VPC ID (e.g. "vpc-6c9f1a0b")'
         type: string
-        default: "mysql5.7"
-        display_group: RDS Settings
+        display_group: Network and Security
+      - name: PubliclyAccessible
+        required: true
+        title: Publicly Accessible
+        description: 'Indicates whether the DB instance is an Internet-facing instance.'
+        type: boolean
+        default: false
+        display_group: Network and Security
+      - name: AccessCidr
+        required: true
+        title: Access CIDR
+        description: 'CIDR block to allow to connect to database (e.g. "10.0.0.0/16")'
+        type: string
+        display_group: Network and Security
+      #########
+      # Backup
+      #########
+      - name: PreferredBackupWindow
+        required: true
+        title: Preferred Backup Window
+        description: 'The daily time range in UTC during which automated backups are created (if automated backups are enabled). Cannot overlap with Preferred Maintenance Window Time'
+        type: enum
+        enum:
+          - 00:00-02:00
+          - 01:00-03:00
+          - 02:00-04:00
+          - 03:00-05:00
+          - 04:00-06:00
+          - 05:00-07:00
+          - 06:00-08:00
+          - 07:00-09:00
+          - 08:00-10:00
+          - 09:00-11:00
+          - 10:00-12:00
+          - 11:00-13:00
+          - 12:00-14:00
+          - 13:00-15:00
+          - 14:00-16:00
+          - 15:00-17:00
+          - 16:00-18:00
+          - 17:00-19:00
+          - 18:00-20:00
+          - 19:00-21:00
+          - 20:00-22:00
+          - 21:00-23:00
+          - 22:00-24:00
+        default: 00:00-02:00
+        display_group: Backup
+      ##############
+      # Maintenance
+      ##############
+      - name: PreferredMaintenanceWindowDay
+        required: true
+        title: Day of Preferred Maintenance Window
+        description: 'The day of the week which RDS maintenance will be performed'
+        type: enum
+        enum:
+          - Mon
+          - Tue
+          - Wed
+          - Thu
+          - Fri
+          - Sat
+          - Sun
+        default: Mon
+        display_group: Maintenance
+      - name: PreferredMaintenanceWindowStartTime
+        required: true
+        title: Preferred Maintenance Window Start Time
+        description: 'The weekly start time in UTC for the RDS maintenance window, must be less than Preferred Maintenance Window End Time and cannot overlap with Preferred Backup Window'
+        type: enum
+        enum:
+          - 00:00
+          - 01:00
+          - 02:00
+          - 03:00
+          - 04:00
+          - 05:00
+          - 06:00
+          - 07:00
+          - 08:00
+          - 09:00
+          - 10:00
+          - 11:00
+          - 12:00
+          - 13:00
+          - 14:00
+          - 15:00
+          - 16:00
+          - 17:00
+          - 18:00
+          - 19:00
+          - 20:00
+          - 21:00
+          - 22:00
+          - 23:00
+        default: 04:00
+        display_group: Maintenance
+      - name: PreferredMaintenanceWindowEndTime
+        required: true
+        title: Preferred Maintenance Window End Time
+        description: 'The weekly end time in UTC for the RDS maintenance window, must be less than Preferred Maintenance Window End Time and cannot overlap with Preferred Backup Window'
+        type: enum
+        enum:
+          - 00:00
+          - 01:00
+          - 02:00
+          - 03:00
+          - 04:00
+          - 05:00
+          - 06:00
+          - 07:00
+          - 08:00
+          - 09:00
+          - 10:00
+          - 11:00
+          - 12:00
+          - 13:00
+          - 14:00
+          - 15:00
+          - 16:00
+          - 17:00
+          - 18:00
+          - 19:00
+          - 20:00
+          - 21:00
+          - 22:00
+          - 23:00
+        default: 06:00
+        display_group: Maintenance
+  - name: mysql-dev
+    description: 'Amazon RDS MySQL for Development'
+    free: false
+    metadata:
+      displayName: "MySQL - Development"
+      longDescription: "Amazon RDS with a MySQL engine"
+      cost: $0.00
+    parameters:
+      ##########################
+      # AWS Account Information
+      ##########################
+      - name: aws_access_key
+        required: true
+        title: AWS Access Key
+        description: 'AWS Access Key to authenticate to AWS with.'
+        type: string
+        display_group: AWS Account Information
+      - name: aws_secret_key
+        required: true
+        title: AWS Secret Key
+        description: 'AWS Secret Key to authenticate to AWS with.'
+        type: string
+        display_type: password
+        display_group: AWS Account Information
+      - name: aws_cloudformation_role_arn
+        required: true
+        title: AWS Cloudformation role ARN
+        description: 'IAM role ARN for use as Cloudformation Stack Role.'
+        type: string
+        display_group: AWS Account Information
+      - name: region
+        required: true
+        title: AWS Region
+        description: 'AWS Region to create RDS instance in.'
+        type: enum
+        enum:
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-south-1
+          - ap-southeast-1
+          - ap-southeast-2
+          - ca-central-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - sa-east-1
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+        default: us-west-2
+      ###################################
+      # Database Instance Specifications
+      ###################################
+      - name: DBInstanceClass
+        required: true
+        title: DB Instance Class
+        description: 'The compute and memory capacity of the DB instance.'
+        type: enum
+        enum:
+          - db.m4.large
+          - db.m4.xlarge
+          - db.m4.2xlarge
+          - db.m4.4xlarge
+          - db.m4.10xlarge
+          - db.r3.large
+          - db.r3.xlarge
+          - db.r3.2xlarge
+          - db.r3.4xlarge
+          - db.r3.8xlarge
+          - db.t2.large
+        default: db.t2.large
+        display_group: Database Instance Specifications
+      - name: AllocatedStorageAndIops
+        required: true
+        title: Allocated Storage and IOPS
+        description: 'Storage and IOPS to allocate. These are related due to EBS characteristics'
+        type: enum
+        enum:
+         - "100 GB / 1,000 IOPS"
+         - "300 GB / 3,000 IOPS"
+         - "600 GB / 6,000 IOPS"
+         - "1,000 GB / 10,000 IOPS"
+         - "1,500 GB / 15,000 IOPS"
+         - "2,000 GB / 20,000 IOPS"
+         - "3,000 GB / 30,000 IOPS"
+         - "4,000 GB / 40,000 IOPS"
+         - "6,000 GB / 60,000 IOPS"
+        default: "100 GB / 1,000 IOPS"
+        display_group: Database Instance Specifications
+      ###################
+      # Database Options
+      ###################
+      - name: EngineVersion
+        required: true
+        title: Engine Version
+        description: 'The version number of the database engine to use.'
+        type: enum
+        enum:
+          - 5.7.17
+          - 5.6.35
+          - 5.5.54
+        default: 5.7.17
+        display_group: Database Options
+      - name: MysqlServerTimezone
+        required: true
+        title: MySQL Server Timezone
+        description: 'The default timezone for the database engine to use. '
+        type: enum
+        enum:
+          - UTC
+          - Africa/Cairo
+          - Africa/Casablanca
+          - Africa/Harare
+          - Africa/Monrovia
+          - Africa/Nairobi
+          - Africa/Tripoli
+          - Africa/Windhoek
+          - America/Araguaina
+          - America/Asuncion
+          - America/Bogota
+          - America/Caracas
+          - America/Chihuahua
+          - America/Cuiaba
+          - America/Denver
+          - America/Fortaleza
+          - America/Guatemala
+          - America/Halifax
+          - America/Manaus
+          - America/Matamoros
+          - America/Monterrey
+          - America/Montevideo
+          - America/Phoenix
+          - America/Santiago
+          - America/Tijuana
+          - Asia/Amman
+          - Asia/Ashgabat
+          - Asia/Baghdad
+          - Asia/Baku
+          - Asia/Bangkok
+          - Asia/Beirut
+          - Asia/Calcutta
+          - Asia/Damascus
+          - Asia/Dhaka
+          - Asia/Irkutsk
+          - Asia/Jerusalem
+          - Asia/Kabul
+          - Asia/Karachi
+          - Asia/Kathmandu
+          - Asia/Krasnoyarsk
+          - Asia/Magadan
+          - Asia/Muscat
+          - Asia/Novosibirsk
+          - Asia/Riyadh
+          - Asia/Seoul
+          - Asia/Shanghai
+          - Asia/Singapore
+          - Asia/Taipei
+          - Asia/Tehran
+          - Asia/Tokyo
+          - Asia/Ulaanbaatar
+          - Asia/Vladivostok
+          - Asia/Yakutsk
+          - Asia/Yerevan
+          - Atlantic/Azores
+          - Australia/Adelaide
+          - Australia/Brisbane
+          - Australia/Darwin
+          - Australia/Hobart
+          - Australia/Perth
+          - Australia/Sydney
+          - Canada/Newfoundland
+          - Canada/Saskatchewan
+          - Brazil/East
+          - Europe/Amsterdam
+          - Europe/Athens
+          - Europe/Dublin
+          - Europe/Helsinki
+          - Europe/Istanbul
+          - Europe/Kaliningrad
+          - Europe/Moscow
+          - Europe/Paris
+          - Europe/Prague
+          - Europe/Sarajevo
+          - Pacific/Auckland
+          - Pacific/Fiji
+          - Pacific/Guam
+          - Pacific/Honolulu
+          - Pacific/Samoa
+          - US/Alaska
+          - US/Central
+          - US/Eastern
+          - US/East-Indiana
+          - US/Pacific
+        default: UTC
+        display_group: Database Options
+      #######################
+      # Network and Security
+      #######################
+      - name: VpcId
+        required: true
+        title: VPC ID
+        description: 'VPC ID (e.g. "vpc-6c9f1a0b")'
+        type: string
+        display_group: Network and Security
+      - name: PubliclyAccessible
+        required: true
+        title: Publicly Accessible
+        description: 'Indicates whether the DB instance is an Internet-facing instance.'
+        type: boolean
+        default: false
+        display_group: Network and Security
+      - name: AccessCidr
+        required: true
+        title: Access CIDR
+        description: 'CIDR block to allow to connect to database (e.g. "10.0.0.0/16")'
+        type: string
+        display_group: Network and Security
+  - name: mysql-custom
+    description: 'Amazon RDS MySQL'
+    free: false
+    metadata:
+      displayName: "MySQL - Custom"
+      longDescription: "Amazon RDS with a MySQL engine"
+      cost: $0.00
+    parameters:
+      ##########################
+      # AWS Account Information
+      ##########################
+      - name: aws_access_key
+        required: true
+        title: AWS Access Key
+        description: 'AWS Access Key to authenticate to AWS with.'
+        type: string
+        display_group: AWS Account Information
+      - name: aws_secret_key
+        required: true
+        title: AWS Secret Key
+        description: 'AWS Secret Key to authenticate to AWS with.'
+        type: string
+        display_type: password
+        display_group: AWS Account Information
+      - name: aws_cloudformation_role_arn
+        required: true
+        title: AWS Cloudformation role ARN
+        description: 'IAM role ARN for use as Cloudformation Stack Role.'
+        type: string
+        display_group: AWS Account Information
+      - name: region
+        required: true
+        title: AWS Region
+        description: 'AWS Region to create RDS instance in.'
+        type: enum
+        enum:
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-south-1
+          - ap-southeast-1
+          - ap-southeast-2
+          - ca-central-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - sa-east-1
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+        default: us-west-2
       ###################################
       # Database Instance Specifications
       ###################################
@@ -125,28 +688,6 @@ plans:
         title: VPC ID
         description: 'VPC ID (e.g. "vpc-6c9f1a0b")'
         type: string
-        display_group: Network and Security
-      - name: region
-        required: true
-        title: AWS Region
-        description: 'AWS Region to create RDS instance in.'
-        type: enum
-        enum:
-          - ap-northeast-1
-          - ap-northeast-2
-          - ap-south-1
-          - ap-southeast-1
-          - ap-southeast-2
-          - ca-central-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - sa-east-1
-          - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-        default: us-west-2
         display_group: Network and Security
       - name: PubliclyAccessible
         required: true
