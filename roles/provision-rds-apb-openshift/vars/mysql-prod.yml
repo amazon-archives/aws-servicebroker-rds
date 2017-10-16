@@ -9,7 +9,7 @@ NumberOfAvailabilityZones: "2"
 AvailabilityZones: "auto"
 CidrSize: "27"
 CidrBlocks: "auto"
-application_name_alnum: "{{ application_name | regex_search('[^a-zA-Z0-9]') }}"
+application_name_alnum: "{{ application_name | regex_replace('[^a-zA-Z0-9]') }}"
 DBName: "{{ application_name_alnum[0:63] }}"
 PortNumber: 13306
 StorageEncrypted: true
