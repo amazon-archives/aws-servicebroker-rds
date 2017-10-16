@@ -678,6 +678,7 @@ plans:
         title: Master User Password
         description: 'Master user database Password'
         type: string
+        display_type: password
         display_group: Database Instance Specifications
       #######################
       # Network and Security
