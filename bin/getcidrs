@@ -21,4 +21,4 @@ for sl in [ list(s.subnet(CIDR_SIZE)) for s in unused_cidrs.iter_cidrs() ]:
 if len(available_cidrs) < QTY:
     sys.stderr.write("Not enough available space in the vpc\n")
     sys.exit(1)
-print(','.join([str(s) for s in available_cidrs[-(QTY+1):]]))
+print(','.join([str(s) for s in available_cidrs[-(QTY):]]))
