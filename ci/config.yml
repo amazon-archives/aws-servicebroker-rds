@@ -1,0 +1,19 @@
+global:
+  parameters: {}
+  regions:
+    - us-east-1
+
+plans:
+  mysql-prod:
+    parameters:
+      DBInstanceClass: db.r3.2xlarge
+      AllocatedStorageAndIops: "100 GB / 1,000 IOPS"
+      EngineVersion: "5.7.17"
+      MysqlServerTimezone: "UTC"
+      PubliclyAccessible: false
+      AccessCidr: "10.0.0.0/16"
+      PreferredBackupWindow: "00:00-02:00"
+      PreferredMaintenanceWindowDay: Mon
+      PreferredMaintenanceWindowStartTime: 04:00
+      PreferredMaintenanceWindowEndTime: 06:00
+    sample_app: rds-sample-app-apb
