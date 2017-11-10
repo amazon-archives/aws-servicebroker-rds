@@ -30,7 +30,7 @@
   when: AvailabilityZones == "auto"
 - name: Launch RDS MySQL cluster
   cloudformation:
-    stack_name: "apb-RDS-{{ stack_suffix }}"
+    stack_name: "apb-rds-{{ stack_suffix }}"
     state: "present"
     region: "{{ region }}"
     disable_rollback: false
