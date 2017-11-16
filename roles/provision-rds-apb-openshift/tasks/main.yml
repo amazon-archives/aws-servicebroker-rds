@@ -74,10 +74,10 @@
 - name: Encode bind credentials
   asb_encode_binding:
     fields:
-      DB_TYPE: "mysql"
-      DB_PASSWORD: "{{ MasterUserPassword }}"
-      DB_NAME: "{{ DBName }}"
-      DB_HOST: "{{ rds.stack_outputs.EndpointAddress }}"
-      DB_PORT: "{{ PortNumber | string }}"
-      DB_USER: "{{ MasterUsername }}"
+      RDS_ENGINE: "mysql"
+      RDS_MASTER_USER_PASSWORD: "{{ MasterUserPassword }}"
+      RDS_DB_NAME:              "{{ DBName }}"
+      RDS_ENDPOINT_ADDRESS:     "{{ rds.stack_outputs.EndpointAddress }}"
+      RDS_PORT:                 "{{ PortNumber | string }}"
+      RDS_MASTER_USERNAME:      "{{ MasterUsername }}"
   when: rds.log | length < 1
