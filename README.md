@@ -63,7 +63,8 @@ The Database option group will be retained within the AWS should the broker be r
 
 ## Resources
 
-[Getting Started With OCP and the AWS Service Broker](https://github.com/awsservicebroker/docs/blob/develop/getting-started.md)
-[AWS Service Broker Overview](https://github.com/awsservicebroker/docs/blob/develop/service-broker-docs/Overview.md)
-[FAQ](https://github.com/awsservicebroker/docs/blob/develop/service-broker-docs/FAQ.md)
-[Troubleshooting](https://github.com/awsservicebroker/docs/blob/develop/service-broker-docs/Troubleshooting.md)
+[Getting Started With OCP and the AWS Service Broker](https://github.com/awsservicebroker/docs/blob/develop/getting-started.md)  
+[AWS Service Broker Overview](https://github.com/awsservicebroker/docs/blob/develop/service-broker-docs/Overview.md)  
+[FAQ](https://github.com/awsservicebroker/docs/blob/develop/service-broker-docs/FAQ.md)  
+[Troubleshooting](https://github.com/awsservicebroker/docs/blob/develop/service-broker-docs/Troubleshooting.md)  
+
