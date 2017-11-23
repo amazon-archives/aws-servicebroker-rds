@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Best Practice RDS Template for Production Databases (ALPHA build, may kill your puppies and possibly even your databases)",
+    "Description": "Deploys a RDS MySQL database. qs-1nt0fs92s",
     "Metadata": {},
     "Parameters": {
         "AccessCidr": {
