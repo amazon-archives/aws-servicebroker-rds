@@ -1,9 +1,9 @@
 # Amazon RDS for the AWS Service Broker
-Provision, manage and connect to [Amazon RDS](https://github.com/awsservicebroker/docs/wiki).
+Provision, manage and connect to [Amazon RDS](https://aws.amazon.com/rds/).
 
 ## Prerequisites
 
-**IAM resources** - see the [AWS Service Broker Requirements](https://github.com/awsservicebroker/docs/blob/develop/service-broker-docs/Overview.md#requirements) for details
+**IAM resources** - see the [AWS Service Broker Requirements](https://github.com/awslabs/aws-servicebroker-documentation/blob/master/Overview.md#requirements) for details
 **VPC** - A VPC ID will be requested during launch, A VPC with unused CIDR space is required as the plan will create the required subnets.
 
 ## Plans
@@ -63,8 +63,11 @@ The Database option group will be retained within the AWS should the broker be r
 
 ## Resources
 
-[Getting Started With OCP and the AWS Service Broker](https://github.com/awsservicebroker/docs/blob/develop/getting-started.md)  
-[AWS Service Broker Overview](https://github.com/awsservicebroker/docs/blob/develop/service-broker-docs/Overview.md)  
-[FAQ](https://github.com/awsservicebroker/docs/blob/develop/service-broker-docs/FAQ.md)  
-[Troubleshooting](https://github.com/awsservicebroker/docs/blob/develop/service-broker-docs/Troubleshooting.md)  
+[Getting Started With OCP and the AWS Service Broker](https://github.com/awslabs/aws-servicebroker-documentation/blob/master/getting-started.md)  
+[AWS Service Broker Overview](https://github.com/awslabs/aws-servicebroker-documentation/blob/master/Overview.md)  
+[FAQ](https://github.com/awslabs/aws-servicebroker-documentation/blob/master/FAQ.md)  
+[Troubleshooting](https://github.com/awslabs/aws-servicebroker-documentation/blob/master/Troubleshooting.md)  
 
+## License
+
+This library is licensed under the Apache 2.0 License.
