@@ -15,22 +15,114 @@ plans:
   - name: default
     description: 'MySQL RDS Database'
     free: false
+    metadata:
+      displayName: "MySQL"
+      longDescription: "Amazon RDS with a MySQL engine"
+      cost: $0.00
     parameters:
-      - name: stack_identifier
-        required: true
-        title: Unique Stack Identifier
-        description: 'Unique identifier to be included in the CloudFormation Stack Name to prevent naming collisions. Must only contain alphanumeric characters and hyphens. (e.g. "sample-rds-stack", "production-rds-04-2017")'
-        type: string
+      ##########################
+      # AWS Account Information
+      ##########################
       - name: aws_access_key
         required: true
         title: AWS Access Key
         description: 'AWS Access Key to authenticate to AWS with.'
         type: string
+        display_group: AWS Account Information
       - name: aws_secret_key
         required: true
         title: AWS Secret Key
         description: 'AWS Secret Key to authenticate to AWS with.'
         type: string
+        display_group: AWS Account Information
+      ###############
+      # RDS Settings
+      ###############
+      - name: stack_identifier
+        required: true
+        title: Unique Stack Identifier
+        description: 'Unique identifier to be included in the CloudFormation Stack Name to prevent naming collisions. Must only contain alphanumeric characters and hyphens. (e.g. "sample-rds-stack", "production-rds-04-2017")'
+        type: string
+        display_group: RDS Settings
+      - name: ApplicationName
+        required: true
+        title: Application Name
+        description: 'RDS Application name'
+        type: string
+        default: "mysql5.7"
+        display_group: RDS Settings
+      ###################################
+      # Database Instance Specifications
+      ###################################
+      - name: DBInstanceClass
+        required: true
+        title: DB Instance Class
+        description: 'The compute and memory capacity of the DB instance.'
+        type: enum
+        enum:
+          - db.m4.large
+          - db.m4.xlarge
+          - db.m4.2xlarge
+          - db.m4.4xlarge
+          - db.m4.10xlarge
+          - db.r3.large
+          - db.r3.xlarge
+          - db.r3.2xlarge
+          - db.r3.4xlarge
+          - db.r3.8xlarge
+          - db.t2.large
+        default: db.r3.2xlarge
+        display_group: Database Instance Specifications
+      - name: EngineVersion
+        required: true
+        title: Engine Version
+        description: 'The version number of the database engine to use.'
+        type: enum
+        enum:
+          - 5.7.17
+          - 5.6.35
+          - 5.5.54
+        default: 5.7.17
+        display_group: Database Instance Specifications
+      - name: AllocatedStorageAndIops
+        required: true
+        title: Allocated Storage and IOPS
+        description: 'Storage/IOPS to allocate.'
+        type: enum
+        enum:
+         - "100 GB / 1,000 IOPS"
+         - "300 GB / 3,000 IOPS"
+         - "600 GB / 6,000 IOPS"
+         - "1,000 GB / 10,000 IOPS"
+         - "1,500 GB / 15,000 IOPS"
+         - "2,000 GB / 20,000 IOPS"
+         - "3,000 GB / 30,000 IOPS"
+         - "4,000 GB / 40,000 IOPS"
+         - "6,000 GB / 60,000 IOPS"
+        default: "100 GB / 1,000 IOPS"
+        display_group: Database Instance Specifications
+      - name: MasterUsername
+        required: true
+        title: Master User Name
+        description: 'Master database Username'
+        type: string
+        default: sqlsa
+        display_group: Database Instance Specifications
+      - name: MasterUserPassword
+        required: true
+        title: Master User Password
+        description: 'Master user database Password'
+        type: string
+        display_group: Database Instance Specifications
+      #######################
+      # Network and Security
+      #######################
+      - name: VpcId
+        required: true
+        title: VPC ID
+        description: 'VPC ID (e.g. "vpc-6c9f1a0b")'
+        type: string
+        display_group: Network and Security
       - name: region
         required: true
         title: AWS Region
@@ -52,46 +144,81 @@ plans:
           - us-west-1
           - us-west-2
         default: us-west-2
-      - name: ApplicationName
+        display_group: Network and Security
+      - name: PubliclyAccessible
         required: true
-        title: Application Name
-        description: 'RDS Application name'
-        type: string
-        default: "mysql5.7"
-      - name: DBInstanceClass
+        title: Publicly Accessible
+        description: 'Indicates whether the DB instance is an Internet-facing instance.'
+        type: boolean
+        default: false
+        display_group: Network and Security
+      - name: MultiAZ
         required: true
-        title: DB Instance Class
-        description: 'The compute and memory capacity of the DB instance.'
+        title: Multi AZ
+        description: 'Specifies if the database instance is a multiple Availability Zone deployment.'
+        type: boolean
+        default: true
+        display_group: Network and Security
+      - name: NumberOfAvailabilityZones
+        required: true
+        title: Number of Availability Zones
+        description: 'Quantity of subnets to use, if selecting more than 2 the region this stack is in must have at least that many Availability Zones'
         type: enum
-        enum:
-          - db.m4.large
-          - db.m4.xlarge
-          - db.m4.2xlarge
-          - db.m4.4xlarge
-          - db.m4.10xlarge
-          - db.r3.large
-          - db.r3.xlarge
-          - db.r3.2xlarge
-          - db.r3.4xlarge
-          - db.r3.8xlarge
-          - db.t2.large
-        default: db.r3.2xlarge
+        enum: ["1", "2", "3", "4", "5"]
+        default: "3"
+        display_group: Network and Security
+      - name: AvailabilityZones
+        required: true
+        title: Availability Zones
+        description: 'Comma separated list of availability zones to use, must be the same quantity as specified in Number of Availability Zones (e.g. "us-west-2a,us-west-2b,us-west-2c")'
+        type: string
+        default: "us-west-2a,us-west-2b,us-west-2c"
+        display_group: Network and Security
+      - name: CidrBlocks
+        required: true
+        title: CIDR Blocks
+        description: 'Comma seperated list of CIDR blocks to place RDS into, must be the same quantity as specified in Number of Availability Zones (e.g. "10.0.96.0/20,10.0.112.0/20,10.0.128.0/20")'
+        type: string
+        display_group: Network and Security
+      - name: AccessCidr
+        required: true
+        title: Access CIDR
+        description: 'CIDR block to allow to connect to database (e.g. "10.0.0.0/16")'
+        type: string
+        display_group: Network and Security
+      ###################
+      # Database Options
+      ###################
       - name: DBName
         required: true
         title: DB Name
         description: 'The name of the database to create when the DB instance is created. (letters and numbers, max 64 chars)'
         type: string
         default: "myrdsdb1"
-      - name: EngineVersion
+        display_group: Database Options
+      - name: PortNumber
         required: true
-        title: Engine Version
-        description: 'The version number of the database engine to use.'
+        title: Port Number
+        description: 'The port number for the database server to listen on. (values in range 1150-65535)'
+        type: int
+        default: 10001
+        display_type: number
+        display_group: Database Options
+      - name: StorageEncrypted
+        required: true
+        title: Storage Encrypted
+        description: 'Indicates whether the DB instance is encrypted.'
+        type: boolean
+        default: true
+        display_group: Database Options
+      - name: StorageType
+        required: true
+        title: Storage Type
+        description: 'Specifies the storage type to be associated with the DB instance.'
         type: enum
-        enum:
-          - 5.7.17
-          - 5.6.35
-          - 5.5.54
-        default: 5.7.17
+        enum: [io1, gp2, standard]
+        default: io1
+        display_group: Database Options
       - name: MysqlServerTimezone
         required: true
         title: MySQL Server Timezone
@@ -183,11 +310,10 @@ plans:
           - US/East-Indiana
           - US/Pacific
         default: UTC
-      - name: VpcId
-        required: true
-        title: VPC ID
-        description: 'VPC ID (e.g. "vpc-6c9f1a0b")'
-        type: string
+        display_group: Database Options
+      #########
+      # Backup
+      #########
       - name: PreferredBackupWindow
         required: true
         title: Preferred Backup Window
@@ -218,6 +344,7 @@ plans:
           - 21:00-23:00
           - 22:00-24:00
         default: 00:00-02:00
+        display_group: Backup
       - name: BackupRetentionPeriod
         required: true
         title: Backup Retention Period
@@ -225,24 +352,28 @@ plans:
         type: enum
         enum: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35"]
         default: "35"
+        display_group: Backup
       - name: CopyTagsToSnapshot
         required: true
         title: Copy Tags To Snapshots
         description: 'Indicates whether to copy all of the user-defined tags from the DB instance to snapshots of the DB instance.'
         type: boolean
         default: true
-      - name: PortNumber
+        display_group: Backup
+      #############
+      # Monitoring
+      #############
+      - name: MonitoringInterval
         required: true
-        title: Port Number
-        description: 'The port number for the database server to listen on. (values in range 1150-65535)'
-        type: int
-        default: 10001
-      - name: PubliclyAccessible
-        required: true
-        title: Publicly Accessible
-        description: 'Indicates whether the DB instance is an Internet-facing instance.'
-        type: boolean
-        default: false
+        title: Monitoring Interval
+        description: 'The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance.'
+        type: enum
+        enum: [ "1", "5", "10", "15", "30", "60" ]
+        default: "1"
+        display_group: Monitoring
+      ##############
+      # Maintenance
+      ##############
       - name: PreferredMaintenanceWindowDay
         required: true
         title: Day of Preferred Maintenance Window
@@ -257,6 +388,7 @@ plans:
           - Sat
           - Sun
         default: Mon
+        display_group: Maintenance
       - name: PreferredMaintenanceWindowStartTime
         required: true
         title: Preferred Maintenance Window Start Time
@@ -288,6 +420,7 @@ plans:
           - 22:00
           - 23:00
         default: 04:00
+        display_group: Maintenance
       - name: PreferredMaintenanceWindowEndTime
         required: true
         title: Preferred Maintenance Window End Time
@@ -319,95 +452,18 @@ plans:
           - 22:00
           - 23:00
         default: 06:00
-      - name: MonitoringInterval
-        required: true
-        title: Monitoring Interval
-        description: 'The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance.'
-        type: enum
-        enum: [ "1", "5", "10", "15", "30", "60" ]
-        default: "1"
-      - name: MultiAZ
-        required: true
-        title: Multi AZ
-        description: 'Specifies if the database instance is a multiple Availability Zone deployment.'
-        type: boolean
-        default: true
-      - name: NumberOfAvailabilityZones
-        required: true
-        title: Number of Availability Zones
-        description: 'Quantity of subnets to use, if selecting more than 2 the region this stack is in must have at least that many Availability Zones'
-        type: enum
-        enum: ["1", "2", "3", "4", "5"]
-        default: "3"
-      - name: AvailabilityZones
-        required: true
-        title: Availability Zones
-        description: 'Comma separated list of availability zones to use, must be the same quantity as specified in Number of Availability Zones (e.g. "us-west-2a,us-west-2b,us-west-2c")'
-        type: string
-        default: "us-west-2a,us-west-2b,us-west-2c"
-      - name: CidrBlocks
-        required: true
-        title: CIDR Blocks
-        description: 'Comma seperated list of CIDR blocks to place RDS into, must be the same quantity as specified in Number of Availability Zones (e.g. "10.0.96.0/20,10.0.112.0/20,10.0.128.0/20")'
-        type: string
-      - name: AccessCidr
-        required: true
-        title: Access CIDR
-        description: 'CIDR block to allow to connect to database (e.g. "10.0.0.0/16")'
-        type: string
-      - name: MasterUsername
-        required: true
-        title: Master User Name
-        description: 'Master database Username'
-        type: string
-        default: sqlsa
-      - name: MasterUserPassword
-        required: true
-        title: Master User Password
-        description: 'Master user database Password'
-        type: string
+        display_group: Maintenance
       - name: AllowMajorVersionUpgrade
         required: true
         title: Allow Major Version Upgrade
         description: "If you update the Engine Version property to a version that's different from the DB instance''s current major version, set this property to true."
         type: boolean
         default: false
+        display_group: Maintenance
       - name: AutoMinorVersionUpgrade
         required: true
         title: Allow Minor Version Upgrade
         description: 'Indicates that minor engine upgrades are applied automatically to the DB instance during the maintenance window.'
         type: boolean
         default: true
-      - name: StorageEncrypted
-        required: true
-        title: Storage Encrypted
-        description: 'Indicates whether the DB instance is encrypted.'
-        type: boolean
-        default: true
-      - name: AllocatedStorageAndIops
-        required: true
-        title: Allocated Storage and IOPS
-        description: 'Storage/IOPS to allocate.'
-        type: enum
-        enum:
-         - "100 GB / 1,000 IOPS"
-         - "300 GB / 3,000 IOPS"
-         - "600 GB / 6,000 IOPS"
-         - "1,000 GB / 10,000 IOPS"
-         - "1,500 GB / 15,000 IOPS"
-         - "2,000 GB / 20,000 IOPS"
-         - "3,000 GB / 30,000 IOPS"
-         - "4,000 GB / 40,000 IOPS"
-         - "6,000 GB / 60,000 IOPS"
-        default: "100 GB / 1,000 IOPS"
-      - name: StorageType
-        required: true
-        title: Storage Type
-        description: 'Specifies the storage type to be associated with the DB instance.'
-        type: enum
-        enum: [io1, gp2, standard]
-        default: io1
-    metadata:
-      displayName: "MySQL"
-      longDescription: "Amazon RDS with a MySQL engine"
-      cost: $0.00
+        display_group: Maintenance
