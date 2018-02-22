@@ -55,6 +55,8 @@ Best practice MySQL plan for development use by setting the following parameters
     PreferredMaintenanceWindowStartTime: 06:00
     PreferredMaintenanceWindowEndTime: 07:00
 
+Restore from snapshot is not supported at this stage. This will be added as a future plan.
+
 ## Retained resources
 
 Resources retained within the AWS account should this plan be removed.
