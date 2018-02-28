@@ -571,36 +571,6 @@
                 "4,000 GB / 40,000 IOPS"
             ]
         },
-        "AuditSupported": {
-            "Fn::Not": [
-                {
-                    "Fn::Or": [
-                        {
-                            "Fn::Equals": [
-                                {
-                                    "Fn::FindInMap": [
-                                        "Version2Family",
-                                        {
-                                            "Ref": "EngineVersion"
-                                        },
-                                        "MajorVersion"
-                                    ]
-                                },
-                                "5.5"
-                            ]
-                        },
-                        {
-                            "Fn::Equals": [
-                                {
-                                    "Ref": "EngineVersion"
-                                },
-                                "5.6.27"
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
         "EncryptionEnabled": {
             "Fn::Equals": [
                 {
@@ -827,29 +797,7 @@
                 "OptionGroupDescription": {
                     "Fn::Sub": "Application: ${ApplicationName} Database: ${DBName}"
                 },
-                "OptionConfigurations": [
-                    {
-                        "Fn::If": [
-                            "AuditSupported",
-                            {
-                                "OptionName": "MARIADB_AUDIT_PLUGIN",
-                                "OptionSettings": [
-                                    {
-                                        "Name": "SERVER_AUDIT_FILE_ROTATE_SIZE",
-                                        "Value": "100000000"
-                                    },
-                                    {
-                                        "Name": "SERVER_AUDIT_FILE_ROTATIONS",
-                                        "Value": "100"
-                                    }
-                                ]
-                            },
-                            {
-                                "Ref": "AWS::NoValue"
-                            }
-                        ]
-                    }
-                ],
+                "OptionConfigurations": [],
                 "Tags": [
                     {
                         "Key": "ApplicationName",
