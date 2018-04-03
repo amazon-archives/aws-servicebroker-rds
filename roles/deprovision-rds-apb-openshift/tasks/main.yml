@@ -9,6 +9,6 @@
     stack_suffix: "{{ command_output.stdout }}"
 - name: Remove RDS MySQL cluster
   cloudformation:
-    stack_name: "apb-RDS-{{ stack_suffix }}"
+    stack_name: "apb-rds-{{ stack_suffix }}"
     state: "absent"
     region: "{{ region }}"
